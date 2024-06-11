@@ -1,7 +1,14 @@
 package com.example.chat.models;
 
+import lombok.*;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class ChatMessage {
     private String content;
     private String sender;
-    // Getters and Setters
+    private MessageType type;
 }
