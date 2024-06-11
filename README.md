@@ -1,1 +1,1 @@
-Schoolwork Project - Caht POC development
+Schoolwork Project - Chat POC development
