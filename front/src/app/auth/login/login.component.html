@@ -1,0 +1,11 @@
+<main>
+    <h1>Se Connecter</h1>
+    <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
+        <label>Email ou Nom d’utilisateur</label>
+        <input type="text" formControlName="username"/>
+        <label>Mot de passe</label>
+        <input type="password" formControlName="password"/>
+        <p *ngIf="errorMessage != ''" class="errorMessage">{{errorMessage}}</p>
+        <button type="submit">Se Connecter</button>
+    </form>
+</main>
