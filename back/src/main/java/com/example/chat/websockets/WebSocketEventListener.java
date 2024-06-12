@@ -1,4 +1,4 @@
-package com.example.chat.components;
+package com.example.chat.websockets;
 
 import com.example.chat.models.ChatMessage;
 import com.example.chat.models.MessageType;
