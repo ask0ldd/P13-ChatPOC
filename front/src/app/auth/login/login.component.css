@@ -1,0 +1,29 @@
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.formLogin {
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  flex: 1 1 100%;
+  width: 100%;
+}
+
+.formLogin label {
+  margin-bottom: 0.5rem;
+}
+
+.formLogin input {
+  margin-bottom: 1.5rem;
+  height: 2rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.formLogin button {
+  height: 2.25rem;
+}

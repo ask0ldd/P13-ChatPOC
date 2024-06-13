@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +17,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private router: Router,
+    private authService : AuthService,
   ) { }
 
   loginForm = new FormGroup({
@@ -27,7 +29,13 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(){
-
+    if(this.loginForm.valid)
+    {
+      const username = this.loginForm.get("username")?.value
+      if(username && username != "") this.authService.setActiveUser(username)
+    }
+    console.log(this.authService.getActiveUser())
+    this.router.navigate(['/chat'])
   }
 
   ngOnDestroy(): void {
