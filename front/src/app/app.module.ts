@@ -3,18 +3,21 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/login/login.component';
-import { ChatComponent } from './chat/chat/chat.component';
+import { ChatComponent } from './chat/chat.component';
 import { SharedModule } from './module/shared.module';
-import { ReactiveFormsModule } from '@angular/forms';
+import { MessageComponent } from './chat/message/message.component';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    ChatComponent
+    ChatComponent,
+    MessageComponent,
   ],
   imports: [
     BrowserModule,
+    AppRoutingModule,
     SharedModule,
   ],
   providers: [],
