@@ -1,0 +1,12 @@
+.messageContainer {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #555555;
+  padding: 1rem 0.5rem;
+}
+
+.avatarDateContainer {
+  display: flex;
+  flex-direction: row;
+  column-gap: 1rem;
+}
