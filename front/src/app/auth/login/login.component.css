@@ -3,6 +3,8 @@ main {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  font-family: "Jost", sans-serif;
+  font-size: 1rem;
 }
 
 .formLogin {
@@ -22,6 +24,16 @@ main {
   height: 2rem;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+  background-color: #f0f0f0;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  font-family: "Jost", sans-serif;
+  font-size: 1rem;
+}
+
+input:focus {
+  border: none;
+  outline: 1px solid #2292ee;
 }
 
 .formLogin button {

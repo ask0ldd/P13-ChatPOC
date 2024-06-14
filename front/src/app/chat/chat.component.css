@@ -3,6 +3,13 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  font-family: "Jost", sans-serif;
+  font-size: 1rem;
+}
+
+main {
+  font-family: "Jost", sans-serif;
+  font-size: 1rem;
 }
 
 .newMessageContainer {
@@ -17,6 +24,13 @@ textarea {
   width: 100%;
   height: 8rem;
   padding: 0.5rem 0.75rem;
+  font-family: "Jost", sans-serif;
+  font-size: 1rem;
+}
+
+textarea:focus {
+  border: none;
+  outline: 1px solid #2292ee;
 }
 
 .chatMain {
@@ -30,5 +44,12 @@ textarea {
 }
 
 button {
-  padding: 0.5rem 1.5rem;
+  margin-top: auto;
+}
+
+textarea {
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
 }

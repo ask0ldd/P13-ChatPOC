@@ -1,1 +1,32 @@
-/* You can add global styles to this file, and also import other style files */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 8px 0;
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  font-family: "Jost", sans-serif;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #0078d7;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #2292ee;
+  box-shadow: 0 4px 8px #97c8f0;
+}
