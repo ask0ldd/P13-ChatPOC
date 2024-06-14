@@ -7,6 +7,7 @@ import { ChatComponent } from './chat/chat.component';
 import { SharedModule } from './module/shared.module';
 import { MessageComponent } from './chat/message/message.component';
 import { AppRoutingModule } from './app-routing.module';
+import { DateFormatPipe } from './pipes/date-format.pipe';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { AppRoutingModule } from './app-routing.module';
     LoginComponent,
     ChatComponent,
     MessageComponent,
+    DateFormatPipe,
   ],
   imports: [
     BrowserModule,
