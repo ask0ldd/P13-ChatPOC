@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ChatService } from '../services/chat.service';
 import { IMessage } from '@stomp/stompjs';
 import { IChatMessage } from '../interfaces/IChatMessage';
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
 
   @ViewChild('messageTextarea')
   messageTextarea!: ElementRef;
@@ -25,20 +25,24 @@ export class ChatComponent implements OnInit {
   ){ }
 
   ngOnInit(): void {
-    if(this.authService.getActiveUser() == "") this.router.navigate(['/'])
-    const displayReceivedMessageCallback = (message : IMessage) => {
-      this.chatHistory.push(JSON.parse(message.body) as IChatMessage)
+    if(this.authService.getActiveUser() == "") {
+      this.router.navigate(['/']) 
+    } 
+    else {
+      const displayReceivedMessageCallback = (message : IMessage) => {
+        this.chatHistory.push(JSON.parse(message.body) as IChatMessage)
+      }
+      this.chatService.connect(displayReceivedMessageCallback)
     }
-    /*this.chatService.connect(() => {
-      if(!this.subscribed) this.chatService.subscribe("topic/public", callback)
-      this.subscribed = true
-    })*/
-    this.chatService.connect(displayReceivedMessageCallback)
   }
 
   sendMessage(){
     this.chatService.send("/app/chat.sendMessage", this.messageTextarea.nativeElement.value)
     this.messageTextarea.nativeElement.value = ""
-    console.log(this.chatHistory)
+    // console.log(this.chatHistory)
+  }
+
+  ngOnDestroy(): void {
+      this.chatService.disconnect()
   }
 }
