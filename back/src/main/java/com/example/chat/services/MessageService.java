@@ -17,8 +17,8 @@ public class MessageService implements IMessageService {
         this.chatSessionRepository = chatSessionRepository;
     }
 
-    public ChatMessage create(ChatMessage chatMessage, String sessionName){
-        ChatSession session = chatSessionRepository.findByName(sessionName).orElseThrow(() -> new SessionNotFoundException("Target user cannot be found."));
-
+    public ChatMessage saveMessage(ChatMessage chatMessage, String sessionName){
+        ChatSession session = chatSessionRepository.findByName(sessionName).orElseThrow(() -> new SessionNotFoundException("Target session cannot be found."));
+        return chatMessageRepository.save(chatMessage);
     }
 }
