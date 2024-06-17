@@ -1,8 +1,10 @@
 package com.example.chat.websockets;
 
+import com.example.chat.exceptions.UserNotFoundException;
 import com.example.chat.models.ChatMessage;
 import com.example.chat.models.MessageType;
-import lombok.RequiredArgsConstructor;
+import com.example.chat.models.User;
+import com.example.chat.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -11,24 +13,28 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 @Component
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 @Slf4j // for logging purposes
 public class WebSocketEventListener {
 
     private final SimpMessageSendingOperations messageTemplate;
+    private final UserRepository userRepository;
+
+    public WebSocketEventListener(SimpMessageSendingOperations messageTemplate, UserRepository userRepository) {
+        this.messageTemplate = messageTemplate;
+        this.userRepository = userRepository;
+    }
 
     @EventListener
     public void handleDisconnect(SessionDisconnectEvent event) {
-        // !!! LATER
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String username = (String) headerAccessor.getSessionAttributes().get("username");
-        if(username != null) {
-            log.info("User disconnected : {}", username);
-            var message = ChatMessage.builder()
-                    .type(MessageType.LEAVE)
-                    .sender(username)
-                    .build();
-            messageTemplate.convertAndSend("/topic/chat", message);
-        }
+        User user = userRepository.findByName(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+        log.info("User disconnected : {}", username);
+        var message = ChatMessage.builder()
+                .type(MessageType.LEAVE)
+                .sender(user)
+                .build();
+        messageTemplate.convertAndSend("/topic/chat", message);
     }
 }
