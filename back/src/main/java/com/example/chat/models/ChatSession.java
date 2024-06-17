@@ -21,6 +21,10 @@ public class ChatSession {
     @Column(name = "name", unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "sessions")
+    @OneToMany(mappedBy = "session")
     private List<ChatMessage> chatMessages;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

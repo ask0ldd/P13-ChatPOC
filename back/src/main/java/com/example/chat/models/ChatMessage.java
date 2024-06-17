@@ -30,4 +30,8 @@ public class ChatMessage {
 
     @CreationTimestamp
     private LocalDateTime sentAt;
+
+    @ManyToOne
+    @JoinColumn(name = "chatsession_id", nullable = false)
+    private ChatSession session;
 }
