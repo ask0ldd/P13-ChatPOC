@@ -26,6 +26,13 @@ public class ChatController {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Sends a message to a public room
+     *
+     * @param message The {@link MessageDto} object containing the message details.
+     * @return A {@link ChatMessage} object representing the sent message.
+     * @throws UserNotFoundException If the sender user cannot be found in the repository.
+     */
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public") // linked to websocketconfig registry.enableSimpleBroker("/topic/", "/queue/")
     public ChatMessage sendMessage(@Payload MessageDto message) {
@@ -39,6 +46,7 @@ public class ChatController {
                 .build();
     }
 
+    // public room
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/public") // linked to websocketconfig registry.enableSimpleBroker("/topic/", "/queue/")
     public ChatMessage addUser(@Payload MessageDto message, SimpMessageHeaderAccessor headerAccessor){
@@ -54,8 +62,9 @@ public class ChatController {
                 .build();
     }
 
-    @MessageMapping("/chat/{roomId}/sendMessage")
-    @SendTo("/topic/chat/{roomId}")
+    // private rooms
+    @MessageMapping("/chat/sendMessage/{roomId}")
+    @SendTo("/queue/{roomId}")
     public ChatMessage sendMessage(@DestinationVariable String roomId, @Payload MessageDto message) {
         System.out.println("message : " + message.getContent());
         User user = userRepository.findByName(message.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
@@ -68,8 +77,9 @@ public class ChatController {
                 .build();
     }
 
-    @MessageMapping("/chat/{roomId}/addUser")
-    @SendTo("/topic/chat/{roomId}")
+    // private rooms
+    @MessageMapping("/chat/addUser/{roomId}")
+    @SendTo("/queue/{roomId}")
     public ChatMessage addUser(@DestinationVariable String roomId, @Payload MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
         // add username and roomId to websocket session
         headerAccessor.getSessionAttributes().put("username", message.getSender());
