@@ -4,10 +4,12 @@ import com.example.chat.exceptions.UserNotFoundException;
 import com.example.chat.models.User;
 import com.example.chat.repositories.UserRepository;
 import com.example.chat.services.interfaces.IQueueService;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class QueueService implements IQueueService {
 
     private List<User> chatQueue;
@@ -16,20 +18,19 @@ public class QueueService implements IQueueService {
     public QueueService(UserRepository userRepository){
         chatQueue = new ArrayList<>();
         this.userRepository = userRepository;
-
     }
 
     public List<User> getUsers(){
         return this.chatQueue;
     }
 
-    public void addUser(Long userId){
-        User user = this.userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+    public void addUser(String username){
+        User user = this.userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         this.chatQueue.add(user);
     }
 
-    public void removeUser(User inQueueUser){
-        this.chatQueue.removeIf(user -> user.equals(inQueueUser));
+    public void removeUser(User user){
+        this.chatQueue.removeIf(inQueueUser -> inQueueUser.equals(user));
     }
 
 }

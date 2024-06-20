@@ -13,11 +13,12 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
 import com.example.chat.models.ChatMessage;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.time.LocalDateTime;
 
 @Controller
-@Slf4j
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class ChatController {
 
     private final UserRepository userRepository;
@@ -37,7 +38,7 @@ public class ChatController {
     @SendTo("/topic/public") // linked to websocketconfig registry.enableSimpleBroker("/topic/", "/queue/")
     public ChatMessage sendMessage(@Payload MessageDto message) {
         System.out.println("message : " + message.getContent());
-        User user = userRepository.findByName(message.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+        User user = userRepository.findByUsername(message.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         return ChatMessage.builder()
                 .type(message.getType())
                 .content(message.getContent())
@@ -53,7 +54,7 @@ public class ChatController {
         // add username to websocket session
         headerAccessor.getSessionAttributes().put("username", message.getSender());
         System.out.println("User connected : " + message.getSender());
-        User user = userRepository.findByName(message.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+        User user = userRepository.findByUsername(message.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         return ChatMessage.builder()
                 .type(message.getType())
                 .content(message.getSender() + " connected.")
@@ -67,7 +68,7 @@ public class ChatController {
     @SendTo("/queue/{roomId}")
     public ChatMessage sendMessage(@DestinationVariable String roomId, @Payload MessageDto message) {
         System.out.println("message : " + message.getContent());
-        User user = userRepository.findByName(message.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+        User user = userRepository.findByUsername(message.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         return ChatMessage.builder()
                 .type(message.getType())
                 .content(message.getContent())
@@ -85,7 +86,7 @@ public class ChatController {
         headerAccessor.getSessionAttributes().put("username", message.getSender());
         headerAccessor.getSessionAttributes().put("roomId", roomId);
         System.out.println("User connected : " + message.getSender() + " to room: " + roomId);
-        User user = userRepository.findByName(message.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+        User user = userRepository.findByUsername(message.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         return ChatMessage.builder()
                 .type(message.getType())
                 .content(message.getSender() + " connected.")

@@ -29,8 +29,8 @@ public class WebSocketEventListener {
     public void handleDisconnect(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String username = (String) headerAccessor.getSessionAttributes().get("username");
-        User user = userRepository.findByName(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
-        log.info("User disconnected : {}", username);
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+        System.out.println("User disconnected :" + username);
         var message = ChatMessage.builder()
                 .type(MessageType.LEAVE)
                 .sender(user)
