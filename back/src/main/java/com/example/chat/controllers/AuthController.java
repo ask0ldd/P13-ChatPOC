@@ -7,16 +7,17 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api")
-public class QueueController {
+public class AuthController {
 
     private final QueueService queueService;
 
-    public QueueController(QueueService queueService){
+    public AuthController(QueueService queueService){
         this.queueService = queueService;
     }
 
-    @GetMapping("queue")
-    public ResponseEntity<?> getUserList() {
-        return ResponseEntity.ok().body(queueService.getUsers());
+    @PostMapping("auth/{username}")
+    public ResponseEntity<?> addUserToList(@PathVariable("username") String username) {
+        queueService.addUser(username);
+        return ResponseEntity.ok().build();
     }
 }
