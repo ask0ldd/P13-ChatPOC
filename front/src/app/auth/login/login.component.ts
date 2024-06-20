@@ -21,8 +21,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) { }
 
   loginForm = new FormGroup({
-    username: new FormControl('', [Validators.required, Validators.minLength(6)]),
-    password: new FormControl('', [Validators.required, Validators.minLength(6)])
+    username: new FormControl('', [Validators.required, Validators.minLength(3)]),
+    password: new FormControl('', [Validators.required, Validators.minLength(3)])
   })
 
   ngOnInit(): void {
@@ -32,9 +32,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     if(this.loginForm.valid)
     {
       const username = this.loginForm.get("username")?.value
-      if(username && username != "") this.authService.setActiveUser(username)
+      if(username && username != "") this.authService.setUsername(username)
     }
-    console.log(this.authService.getActiveUser())
+    console.log(this.authService.getUsername())
     this.router.navigate(['/chat'])
   }
 

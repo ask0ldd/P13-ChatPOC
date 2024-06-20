@@ -25,7 +25,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   ){ }
 
   ngOnInit(): void {
-    if(this.authService.getActiveUser() == "") {
+    if(this.authService.getUsername() == "") {
       this.router.navigate(['/']) 
     } 
     else {

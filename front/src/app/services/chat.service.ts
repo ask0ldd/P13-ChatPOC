@@ -53,13 +53,13 @@ export class ChatService {
   send(topic : string, message : string) {
     if (this.stompClient) {
       const publicTopic = '/ws/chat.sendMessage'
-      this.stompClient.send(publicTopic, {}, JSON.stringify({ content: message, sender: this.authService.getActiveUser(), type : "CHAT"}));
+      this.stompClient.send(publicTopic, {}, JSON.stringify({ content: message, sender: this.authService.getUsername(), type : "CHAT"}));
     }
   }
 
   addUser() {
     if (this.stompClient) {
-      const user = this.authService.getActiveUser()
+      const user = this.authService.getUsername()
       this.stompClient.send("/ws/chat.addUser", {}, JSON.stringify({ content: user, sender: user, type : "JOIN"}));
     }
   }

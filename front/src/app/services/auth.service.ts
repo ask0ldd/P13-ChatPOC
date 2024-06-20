@@ -5,15 +5,27 @@ import { Injectable } from '@angular/core';
 })
 export class AuthService {
 
-  activeUser = ""
+  user = {
+    username : "",
+    role : ""
+  }
 
   constructor() { }
 
-  getActiveUser(){
-    return this.activeUser
+  getUsername(){
+    return this.user.username
   }
 
-  setActiveUser(username : string){
-    this.activeUser = username
+  getRole(){
+    return this.user.role
   }
+
+  setUsername(username : string){
+    this.user.username = username
+  }
+
+  setUserRole(role : string){
+    this.user.role = role
+  }
+
 }
