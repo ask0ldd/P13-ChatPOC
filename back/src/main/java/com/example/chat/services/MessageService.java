@@ -6,7 +6,9 @@ import com.example.chat.models.ChatSession;
 import com.example.chat.repositories.ChatMessageRepository;
 import com.example.chat.repositories.ChatSessionRepository;
 import com.example.chat.services.interfaces.IMessageService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class MessageService implements IMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
