@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, take } from 'rxjs';
+import { ILoginResponse } from 'src/app/interfaces/ILoginResponse';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -32,10 +33,15 @@ export class LoginComponent implements OnInit, OnDestroy {
     if(this.loginForm.valid)
     {
       const username = this.loginForm.get("username")?.value
-      if(username && username != "") this.authService.setUsername(username)
+      if(username) {
+        this.authService.login$(username).pipe(take(1)).subscribe({
+          next: (user : ILoginResponse) => {
+            this.authService.setUsername(user.username)
+            this.router.navigate(['/chat'])
+          }
+        })
+      }
     }
-    console.log(this.authService.getUsername())
-    this.router.navigate(['/chat'])
   }
 
   ngOnDestroy(): void {
