@@ -1,4 +1,7 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable, take } from 'rxjs';
+import { ILoginResponse } from '../interfaces/ILoginResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +13,16 @@ export class AuthService {
     role : ""
   }
 
-  constructor() { }
+  private pathService = 'api/auth';
+
+  constructor(private httpClient: HttpClient) { }
+
+  login$(username : String) : Observable<ILoginResponse>{
+    /*const user$ = this.httpClient.post<ILoginResponse>(`${this.pathService}/login`, {username : username})
+    user$.pipe(take(1)).subscribe(data => this.user.username = data.username)
+    return user$*/
+    return this.httpClient.post<ILoginResponse>(`${this.pathService}/login`, {username : username})
+  }
 
   getUsername(){
     return this.user.username
