@@ -4,6 +4,7 @@ import { IMessage } from '@stomp/stompjs';
 import { IChatMessage } from '../interfaces/IChatMessage';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import { QueueService } from '../services/queue.service';
 
 @Component({
   selector: 'app-chat',
@@ -21,6 +22,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   constructor(
     private chatService : ChatService, 
     private authService : AuthService, 
+    private queueService : QueueService,
     private router : Router
   ){ }
 
@@ -40,6 +42,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.chatService.send("/app/chat.sendMessage", this.messageTextarea.nativeElement.value)
     this.messageTextarea.nativeElement.value = ""
     // console.log(this.chatHistory)
+  }
+
+  refreshQueue(){
+    
   }
 
   ngOnDestroy(): void {

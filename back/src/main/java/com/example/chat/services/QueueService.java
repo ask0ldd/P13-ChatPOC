@@ -13,19 +13,19 @@ import java.util.List;
 public class QueueService implements IQueueService {
 
     private List<User> chatQueue;
-    private final UserRepository userRepository;
+    // private final UserRepository userRepository;
 
     public QueueService(UserRepository userRepository){
         chatQueue = new ArrayList<>();
-        this.userRepository = userRepository;
+        // this.userRepository = userRepository;
     }
 
     public List<User> getUsers(){
         return this.chatQueue;
     }
 
-    public void addUser(String username){
-        User user = this.userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+    public void addUser(User user){
+        // User user = this.userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         this.chatQueue.add(user);
     }
 
