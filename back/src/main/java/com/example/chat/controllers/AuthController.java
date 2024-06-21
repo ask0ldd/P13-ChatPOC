@@ -1,8 +1,14 @@
 package com.example.chat.controllers;
 
+import com.example.chat.dtos.payloads.LoginRequestDto;
+import com.example.chat.dtos.responses.UserResponseDto;
+import com.example.chat.models.User;
 import com.example.chat.services.QueueService;
+import com.example.chat.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.ParseException;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -10,14 +16,17 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final QueueService queueService;
+    private final UserService userService;
 
-    public AuthController(QueueService queueService){
+    public AuthController(QueueService queueService, UserService userService){
         this.queueService = queueService;
+        this.userService = userService;
     }
 
-    @PostMapping("auth/{username}")
-    public ResponseEntity<?> addUserToList(@PathVariable("username") String username) {
-        queueService.addUser(username);
-        return ResponseEntity.ok().build();
+    @PostMapping("auth/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequest) {
+        User user = userService.getUser(loginRequest.getUsername());
+        queueService.addUser(user);
+        return ResponseEntity.ok().body(new UserResponseDto(user));
     }
 }
