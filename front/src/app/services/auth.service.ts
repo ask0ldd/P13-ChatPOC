@@ -10,7 +10,8 @@ export class AuthService {
 
   user = {
     username : "",
-    role : ""
+    role : "",
+    privateRoomId : "",
   }
 
   private pathService = 'api/auth';
@@ -18,9 +19,6 @@ export class AuthService {
   constructor(private httpClient: HttpClient) { }
 
   login$(username : String) : Observable<ILoginResponse>{
-    /*const user$ = this.httpClient.post<ILoginResponse>(`${this.pathService}/login`, {username : username})
-    user$.pipe(take(1)).subscribe(data => this.user.username = data.username)
-    return user$*/
     return this.httpClient.post<ILoginResponse>(`${this.pathService}/login`, {username : username})
   }
 
@@ -28,8 +26,12 @@ export class AuthService {
     return this.user.username
   }
 
-  getRole(){
+  getUserRole(){
     return this.user.role
+  }
+
+  getUserPrivateRoomId(){
+    return this.user.privateRoomId
   }
 
   setUsername(username : string){
@@ -40,4 +42,7 @@ export class AuthService {
     this.user.role = role
   }
 
+  setUserPrivateRoomId(roomId : string){
+    this.user.privateRoomId = roomId
+  }
 }
