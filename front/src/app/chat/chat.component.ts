@@ -39,9 +39,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   sendMessage(){
-    this.chatService.send("/app/chat.sendMessage", this.messageTextarea.nativeElement.value)
+    // this.chatService.sendPublicMessage("/app/chat.sendMessage", this.messageTextarea.nativeElement.value)
+    this.chatService.sendPrivateMessage(this.authService.getUserPrivateRoomId(), this.messageTextarea.nativeElement.value)
     this.messageTextarea.nativeElement.value = ""
-    // console.log(this.chatHistory)
   }
 
   refreshQueue(){

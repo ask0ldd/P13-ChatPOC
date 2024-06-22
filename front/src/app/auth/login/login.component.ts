@@ -37,6 +37,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.authService.login$(username).pipe(take(1)).subscribe({
           next: (user : ILoginResponse) => {
             this.authService.setUsername(user.username)
+            this.authService.setUserPrivateRoomId(user.chatroomId)
             this.router.navigate(['/chat'])
           }
         })

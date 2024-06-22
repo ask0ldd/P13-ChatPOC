@@ -9,7 +9,7 @@ import { AuthService } from './auth.service';
 })
 export class ChatService {
 
-  private chatUrl = "http://localhost:8080/chat"
+  private baseChatUrl = "http://localhost:8080/chat"
   private socket! : WebSocket
   private stompClient! : CompatClient
   private subs : StompSubscription[] = []
@@ -18,7 +18,8 @@ export class ChatService {
 
   connect(callback : (message : IMessage) => void){
     // Create a SockJS instance
-    this.socket = new SockJS(this.chatUrl)
+    // this.socket = new SockJS(this.chatUrl + '/' + this.authService.getUserPrivateRoomId())
+    this.socket = new SockJS(this.baseChatUrl)
 
     // Use STOMP over the SockJS instance
     this.stompClient = Stomp.over(this.socket)
@@ -26,7 +27,7 @@ export class ChatService {
     // Connect to the server
     this.stompClient.connect({}, (info : any) => {
       // Connection successful, you can subscribe to topics here
-      this.addUser()
+      this.addUserToPrivateRoom()
       this.subscribe("", callback)
       console.log('Connected to WebSocket server : ' + info);
     }, (error : string) => {
@@ -44,16 +45,24 @@ export class ChatService {
 
   subscribe(topic : string, callback : messageCallbackType) {
     if (this.stompClient) {
-      const publicTopic = '/topic/public'
-      const sub = this.stompClient.subscribe(publicTopic, callback);
+      // const publicTopic = '/topic/public'
+      const privateRoom = '/queue/' + this.authService.getUserPrivateRoomId()
+      const sub = this.stompClient.subscribe(privateRoom, callback);
       this.subs.push(sub)
     }
   }
 
-  send(topic : string, message : string) {
+  sendPublicMessage(message : string) {
     if (this.stompClient) {
       const publicTopic = '/ws/chat.sendMessage'
       this.stompClient.send(publicTopic, {}, JSON.stringify({ content: message, sender: this.authService.getUsername(), type : "CHAT"}));
+    }
+  }
+
+  sendPrivateMessage(roomId : string, message : string){
+    if (this.stompClient) {
+      const privateRoomEndpoint = '/ws/chat/sendMessage/' + roomId
+      this.stompClient.send(privateRoomEndpoint, {}, JSON.stringify({ content: message, sender: this.authService.getUsername(), type : "CHAT"}));
     }
   }
 
@@ -61,6 +70,13 @@ export class ChatService {
     if (this.stompClient) {
       const user = this.authService.getUsername()
       this.stompClient.send("/ws/chat.addUser", {}, JSON.stringify({ content: user, sender: user, type : "JOIN"}));
+    }
+  }
+
+  addUserToPrivateRoom() {
+    if (this.stompClient) {
+      const user = this.authService.getUsername()
+      this.stompClient.send('/ws/chat/addUser/' + this.authService.getUserPrivateRoomId(), {}, JSON.stringify({ content: user, sender: user, type : "JOIN"}));
     }
   }
 }
