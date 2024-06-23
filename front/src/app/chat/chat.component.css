@@ -53,3 +53,7 @@ textarea {
   border: 1px solid #d0d0d0;
   border-radius: 4px;
 }
+
+.userButton {
+  cursor: pointer;
+}

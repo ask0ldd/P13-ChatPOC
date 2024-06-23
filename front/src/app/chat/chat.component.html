@@ -1,4 +1,7 @@
 <main class="chatMain">
+    <div *ngIf="currentRole == 'ADMIN'" style="width: 100%; padding:1rem 0.5rem;">
+        <div class="userButton" *ngFor="let user of queue; let i = index" (click)="joinRoom(user.chatroomId)">{{user.username}}</div>
+    </div>
     <div style="width: 100%;">
         <app-message *ngFor="let message of chatHistory" [message]="message"></app-message>
     </div>
