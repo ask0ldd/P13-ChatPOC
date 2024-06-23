@@ -1,6 +1,5 @@
-export interface ILoginResponse{
-    id : string
-    username : string
-    email : string
-    chatroomId : string
+import { IUser } from "./IUser"
+
+export interface ILoginResponse extends IUser{
+
 }
