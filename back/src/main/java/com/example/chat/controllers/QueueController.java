@@ -1,8 +1,12 @@
 package com.example.chat.controllers;
 
+import com.example.chat.dtos.responses.UserResponseDto;
+import com.example.chat.models.User;
 import com.example.chat.services.QueueService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -16,7 +20,15 @@ public class QueueController {
     }
 
     @GetMapping("queue")
-    public ResponseEntity<?> getUserList() {
-        return ResponseEntity.ok().body(queueService.getUsers());
+    public ResponseEntity<List<UserResponseDto>> getUserList() {
+        List<UserResponseDto> queue = queueService.getUsers().stream().map(UserResponseDto::new).toList();
+        return ResponseEntity.ok().body(queue);
+    }
+
+    @PostMapping("queue/remove")
+    public ResponseEntity<List<UserResponseDto>> removeUserFromQueue(String username) {
+        queueService.removeUser(username);
+        List<UserResponseDto> queue = queueService.getUsers().stream().map(UserResponseDto::new).toList();
+        return ResponseEntity.ok().body(queue);
     }
 }
