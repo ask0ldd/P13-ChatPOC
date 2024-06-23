@@ -26,7 +26,7 @@ public class AuthController {
     @PostMapping("auth/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequest) {
         User user = userService.getUser(loginRequest.getUsername());
-        queueService.addUser(user);
+        if(user.getRole().equals("USER"))queueService.addUser(user);
         return ResponseEntity.ok().body(new UserResponseDto(user));
     }
 }

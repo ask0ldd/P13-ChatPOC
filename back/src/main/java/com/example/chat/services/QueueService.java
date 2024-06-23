@@ -7,20 +7,22 @@ import com.example.chat.services.interfaces.IQueueService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class QueueService implements IQueueService {
 
-    private List<User> chatQueue;
+    private Set<User> chatQueue;
     // private final UserRepository userRepository;
 
     public QueueService(UserRepository userRepository){
-        chatQueue = new ArrayList<>();
+        chatQueue = new HashSet<>();
         // this.userRepository = userRepository;
     }
 
-    public List<User> getUsers(){
+    public Set<User> getUsers(){
         return this.chatQueue;
     }
 
@@ -31,6 +33,10 @@ public class QueueService implements IQueueService {
 
     public void removeUser(User user){
         this.chatQueue.removeIf(inQueueUser -> inQueueUser.equals(user));
+    }
+
+    public void removeUser(String username){
+        this.chatQueue.removeIf(inQueueUser -> inQueueUser.getUsername().equals(username));
     }
 
 }
