@@ -46,7 +46,7 @@ export class ChatService {
   subscribe(topic : string, callback : messageCallbackType) {
     if (this.stompClient) {
       // const publicTopic = '/topic/public'
-      const privateRoom = '/queue/' + this.authService.getUserPrivateRoomId()
+      const privateRoom = '/queue/' + this.authService.getLoggedUserPrivateRoomId()
       const sub = this.stompClient.subscribe(privateRoom, callback);
       this.subs.push(sub)
     }
@@ -55,28 +55,28 @@ export class ChatService {
   sendPublicMessage(message : string) {
     if (this.stompClient) {
       const publicTopic = '/ws/chat.sendMessage'
-      this.stompClient.send(publicTopic, {}, JSON.stringify({ content: message, sender: this.authService.getUsername(), type : "CHAT"}));
+      this.stompClient.send(publicTopic, {}, JSON.stringify({ content: message, sender: this.authService.getLoggedUserName(), type : "CHAT"}));
     }
   }
 
   sendPrivateMessage(roomId : string, message : string){
     if (this.stompClient) {
       const privateRoomEndpoint = '/ws/chat/sendMessage/' + roomId
-      this.stompClient.send(privateRoomEndpoint, {}, JSON.stringify({ content: message, sender: this.authService.getUsername(), type : "CHAT"}));
+      this.stompClient.send(privateRoomEndpoint, {}, JSON.stringify({ content: message, sender: this.authService.getLoggedUserName(), type : "CHAT"}));
     }
   }
 
   addUser() {
     if (this.stompClient) {
-      const user = this.authService.getUsername()
+      const user = this.authService.getLoggedUserName()
       this.stompClient.send("/ws/chat.addUser", {}, JSON.stringify({ content: user, sender: user, type : "JOIN"}));
     }
   }
 
   addUserToPrivateRoom() {
     if (this.stompClient) {
-      const user = this.authService.getUsername()
-      this.stompClient.send('/ws/chat/addUser/' + this.authService.getUserPrivateRoomId(), {}, JSON.stringify({ content: user, sender: user, type : "JOIN"}));
+      const user = this.authService.getLoggedUserName()
+      this.stompClient.send('/ws/chat/addUser/' + this.authService.getLoggedUserPrivateRoomId(), {}, JSON.stringify({ content: user, sender: user, type : "JOIN"}));
     }
   }
 }

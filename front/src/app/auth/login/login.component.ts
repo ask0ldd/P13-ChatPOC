@@ -22,8 +22,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) { }
 
   loginForm = new FormGroup({
-    username: new FormControl('', [Validators.required, Validators.minLength(3)]),
-    password: new FormControl('', [Validators.required, Validators.minLength(3)])
+    username: new FormControl('guest', [Validators.required, Validators.minLength(3)]),
+    password: new FormControl('guest', [Validators.required, Validators.minLength(3)])
   })
 
   ngOnInit(): void {
@@ -36,8 +36,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       if(username) {
         this.authService.login$(username).pipe(take(1)).subscribe({
           next: (user : ILoginResponse) => {
-            this.authService.setUsername(user.username)
-            this.authService.setUserPrivateRoomId(user.chatroomId)
+            this.authService.setLoggedUser(user)
             this.router.navigate(['/chat'])
           }
         })

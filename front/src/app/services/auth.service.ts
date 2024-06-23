@@ -2,16 +2,19 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, take } from 'rxjs';
 import { ILoginResponse } from '../interfaces/ILoginResponse';
+import { IUser } from '../interfaces/IUser';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  user = {
-    username : "",
-    role : "",
-    privateRoomId : "",
+  user : IUser = {
+    username: "",
+    role: "USER",
+    chatroomId: "",
+    id: 0,
+    email: ""
   }
 
   private pathService = 'api/auth';
@@ -22,27 +25,31 @@ export class AuthService {
     return this.httpClient.post<ILoginResponse>(`${this.pathService}/login`, {username : username})
   }
 
-  getUsername(){
+  getLoggedUserName(){
     return this.user.username
   }
 
-  getUserRole(){
+  getLoggedUserRole(){
     return this.user.role
   }
 
-  getUserPrivateRoomId(){
-    return this.user.privateRoomId
+  getLoggedUserPrivateRoomId(){
+    return this.user.chatroomId
   }
 
-  setUsername(username : string){
+  setLoggedUserName(username : string){
     this.user.username = username
   }
 
-  setUserRole(role : string){
+  setLoggedUserRole(role : "USER" | "ADMIN"){
     this.user.role = role
   }
 
-  setUserPrivateRoomId(roomId : string){
-    this.user.privateRoomId = roomId
+  setLoggedUserPrivateRoomId(roomId : string){
+    this.user.chatroomId = roomId
+  }
+
+  setLoggedUser(user : IUser){
+    this.user = user
   }
 }
