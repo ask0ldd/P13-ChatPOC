@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { CompatClient, IMessage, Stomp, StompSubscription, messageCallbackType } from '@stomp/stompjs';
 import * as SockJS from 'sockjs-client';
 import { AuthService } from './auth.service';
+import { IChatMessageType } from '../interfaces/IChatMessageType';
 
 @Injectable({
   providedIn: 'root'
@@ -16,19 +17,30 @@ export class ChatService {
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
-  connect(callback : (message : IMessage) => void){
-    // Create a SockJS instance
-    // this.socket = new SockJS(this.chatUrl + '/' + this.authService.getUserPrivateRoomId())
+  /**
+   * Establishes a WebSocket connection to the chat server and sets up a STOMP client.
+   * 
+   * @param {function} callback - A function to be called when a message is received.
+   *                              It takes an IMessage object as its parameter.
+   * @param {string} [privateChatroomId] - Optional. The ID of a private chatroom to join.
+   *                                       If not provided, it defaults to an empty string.
+   * @throws {Error} Throws an error if the connection fails.
+   * */
+  connect(callback : (message : IMessage) => void, privateChatroomId? : string){
+    // Creates a new SockJS instance
     this.socket = new SockJS(this.baseChatUrl)
 
-    // Use STOMP over the SockJS instance
+    // Initializes a STOMP client over the SockJS connection
     this.stompClient = Stomp.over(this.socket)
 
-    // Connect to the server
+    // Connect to the WebSocket server
     this.stompClient.connect({}, (info : any) => {
-      // Connection successful, you can subscribe to topics here
-      this.addUserToPrivateRoom()
-      this.subscribe("", callback)
+      // Sends a message indicating the user is joining a private room
+      // this.sendMessage_UserJoiningPrivateRoom()
+      this.sendMessage({isPrivate : true, type : "JOIN"}, "", this.authService.getLoggedUserPrivateRoomId())
+      const room = privateChatroomId ? privateChatroomId : ""
+      // Subscribes to the specified room (or general chat if no room ID is provided)
+      this.subscribe(room, callback)
       console.log('Connected to WebSocket server : ' + info);
     }, (error : string) => {
       // Connection failed
@@ -43,40 +55,35 @@ export class ChatService {
     }
   }
 
-  subscribe(topic : string, callback : messageCallbackType) {
+  subscribe(chatroomId : string, callback : messageCallbackType) {
     if (this.stompClient) {
       // const publicTopic = '/topic/public'
-      const privateRoom = '/queue/' + this.authService.getLoggedUserPrivateRoomId()
+      const privateRoom = chatroomId == "" ? '/queue/' + this.authService.getLoggedUserPrivateRoomId() : '/queue/' + chatroomId
       const sub = this.stompClient.subscribe(privateRoom, callback);
       this.subs.push(sub)
     }
   }
 
-  sendPublicMessage(message : string) {
+  // !!! to fix : privateroomid should be retrieved from selected user if admin or logged user if customer and not as a param
+  sendMessage({isPrivate, type} : IChatMessageType, message? : string, privateRoomId? : string){
     if (this.stompClient) {
-      const publicTopic = '/ws/chat.sendMessage'
-      this.stompClient.send(publicTopic, {}, JSON.stringify({ content: message, sender: this.authService.getLoggedUserName(), type : "CHAT"}));
-    }
-  }
+      if(isPrivate && !privateRoomId) return
 
-  sendPrivateMessage(roomId : string, message : string){
-    if (this.stompClient) {
-      const privateRoomEndpoint = '/ws/chat/sendMessage/' + roomId
-      this.stompClient.send(privateRoomEndpoint, {}, JSON.stringify({ content: message, sender: this.authService.getLoggedUserName(), type : "CHAT"}));
-    }
-  }
+      // message is sent to the public endpoint by default
+      let endpoint = type == "CHAT" ? '/ws/chat.sendMessage' : '/ws/chat.addUser'
 
-  addUser() {
-    if (this.stompClient) {
-      const user = this.authService.getLoggedUserName()
-      this.stompClient.send("/ws/chat.addUser", {}, JSON.stringify({ content: user, sender: user, type : "JOIN"}));
-    }
-  }
+      // endpoint replaced by a private one if necessary
+      if(isPrivate && type == "CHAT") endpoint = '/ws/chat/sendMessage/' + privateRoomId
+      if(isPrivate && type == "JOIN") endpoint = '/ws/chat/addUser/' + this.authService.getLoggedUserPrivateRoomId()
 
-  addUserToPrivateRoom() {
-    if (this.stompClient) {
-      const user = this.authService.getLoggedUserName()
-      this.stompClient.send('/ws/chat/addUser/' + this.authService.getLoggedUserPrivateRoomId(), {}, JSON.stringify({ content: user, sender: user, type : "JOIN"}));
+      if(type == "CHAT") {
+        this.stompClient.send(endpoint, {}, JSON.stringify({ content: message, sender: this.authService.getLoggedUserName(), type : "CHAT"}))
+      }
+
+      if(type == "JOIN") {
+        const user = this.authService.getLoggedUserName()
+        this.stompClient.send(endpoint, {}, JSON.stringify({ content: user, sender: user, type : "JOIN"}))
+      }
     }
   }
 }
