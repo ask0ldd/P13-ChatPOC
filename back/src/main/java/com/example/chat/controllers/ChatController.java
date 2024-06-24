@@ -72,6 +72,7 @@ public class ChatController {
         return ChatMessageResponseDto.builder()
                 .type(message.getType())
                 .content(message.getContent())
+                .sender(user.getUsername())
                 .sentAt(LocalDateTime.now())
                 .build();
     }
