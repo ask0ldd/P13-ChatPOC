@@ -54,6 +54,24 @@ textarea {
   border-radius: 4px;
 }
 
-.userButton {
+.customerList {
+  display: flex;
+  column-gap: 1rem;
+  width: 100%;
+  padding: 1rem 0.5rem;
+}
+
+.customerButton {
+  height: 3rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
+  background-color: #2292ee;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px #2292ee22;
+  color: #fff;
+  font-weight: 600;
 }

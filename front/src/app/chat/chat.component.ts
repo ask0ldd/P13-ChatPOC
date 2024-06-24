@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { QueueService } from '../services/queue.service';
 import { Subscription, take } from 'rxjs';
 import { IUser } from '../interfaces/IUser';
+import { TUserRole } from '../types/TUserRole';
 
 @Component({
   selector: 'app-chat',
@@ -18,12 +19,12 @@ export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('messageTextarea')
   messageTextarea!: ElementRef;
 
+  // !!! should be moved to chat service?
   chatHistory : IChatMessage[] = []
-  // subscribed = false
   queue : IUser[] = []
   queueSubscription! : Subscription
 
-  currentRole! : "ADMIN" | "USER"
+  currentRole! : TUserRole
   activeCustomerChatroomId = ""
 
   constructor(
@@ -46,18 +47,17 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   // action to trigger when a new message is received
   displayReceivedMessageCallback = (message : IMessage) => {
+    console.log(JSON.stringify(message.body))
     this.chatHistory.push(JSON.parse(message.body) as IChatMessage)
   }
 
   sendMessage(){
-    // this.chatService.sendPublicMessage("/app/chat.sendMessage", this.messageTextarea.nativeElement.value)
-
     // if admin & customer selected
     if(this.currentRole == "ADMIN") {
-      if(this.activeCustomerChatroomId != "") this.chatService.sendPrivateMessage(this.activeCustomerChatroomId, this.messageTextarea.nativeElement.value)
+      if(this.activeCustomerChatroomId != "") this.chatService.sendMessage({isPrivate : true, type : "CHAT"}, this.messageTextarea.nativeElement.value, this.activeCustomerChatroomId)
     } else {
-      // if user
-      this.chatService.sendPrivateMessage(this.authService.getLoggedUserPrivateRoomId(), this.messageTextarea.nativeElement.value)
+      // if customer
+      this.chatService.sendMessage({isPrivate : true, type : "CHAT"}, this.messageTextarea.nativeElement.value, this.authService.getLoggedUserPrivateRoomId())
     }
     this.messageTextarea.nativeElement.value = ""
   }
@@ -71,9 +71,12 @@ export class ChatComponent implements OnInit, OnDestroy {
     })
   }
 
-  joinRoom(chatroomId : string){
+  moveToCustomerRoom(chatroomId : string){
     this.activeCustomerChatroomId = chatroomId
-    this.chatService.sendPrivateMessage(chatroomId, "An Admin is here to help you.")
+    this.chatService.disconnect()
+    this.chatService.connect(this.displayReceivedMessageCallback, chatroomId)
+    // doesn't display?
+    this.chatService.sendMessage({isPrivate : true, type : "CHAT"}, "An Admin is here to help you.", chatroomId)
   }
 
   ngOnDestroy(): void {
