@@ -11,7 +11,7 @@ export class AuthService {
 
   user : IUser = {
     username: "",
-    role: "USER",
+    role: "CUSTOMER",
     chatroomId: "",
     id: 0,
     email: ""
@@ -35,18 +35,6 @@ export class AuthService {
 
   getLoggedUserPrivateRoomId(){
     return this.user.chatroomId
-  }
-
-  setLoggedUserName(username : string){
-    this.user.username = username
-  }
-
-  setLoggedUserRole(role : "USER" | "ADMIN"){
-    this.user.role = role
-  }
-
-  setLoggedUserPrivateRoomId(roomId : string){
-    this.user.chatroomId = roomId
   }
 
   setLoggedUser(user : IUser){

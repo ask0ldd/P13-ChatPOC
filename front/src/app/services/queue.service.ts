@@ -8,6 +8,14 @@ import { AuthService } from './auth.service';
 })
 export class QueueService {
 
+  selectedUser : IUser = {
+    username: "",
+    role: "CUSTOMER",
+    chatroomId: "",
+    id: 0,
+    email: ""
+  }
+
   constructor(private httpClient: HttpClient, private authService : AuthService) { }
 
   get$(){
@@ -20,5 +28,13 @@ export class QueueService {
 
   removeSelf$(){
     return this.httpClient.post<IUser[]>('api/queue/remove', this.authService.getLoggedUserName())
+  }
+
+  setSelectedUser(user : IUser){
+    this.selectedUser = user
+  }
+
+  getSelectedUser(){
+    return this.selectedUser
   }
 }
