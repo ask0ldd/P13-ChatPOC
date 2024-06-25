@@ -9,7 +9,7 @@ import { IUser } from '../interfaces/IUser';
 })
 export class AuthService {
 
-  user : IUser = {
+  loggedUser : IUser = {
     username: "",
     role: "CUSTOMER",
     chatroomId: "",
@@ -26,18 +26,18 @@ export class AuthService {
   }
 
   getLoggedUserName(){
-    return this.user.username
+    return this.loggedUser.username
   }
 
   getLoggedUserRole(){
-    return this.user.role
+    return this.loggedUser.role
   }
 
   getLoggedUserPrivateRoomId(){
-    return this.user.chatroomId
+    return this.loggedUser.chatroomId
   }
 
   setLoggedUser(user : IUser){
-    this.user = user
+    this.loggedUser = user
   }
 }
