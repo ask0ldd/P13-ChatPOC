@@ -69,9 +69,41 @@ textarea {
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px #2292ee22;
+  font-weight: 600;
+  column-gap: 1.5rem;
+  overflow: hidden;
+}
+
+.customerButton:hover {
+  background-color: #57abf0;
+  box-shadow: 0 4px 8px #2292ee55;
+}
+
+.activeCustomerButton {
+  height: 3rem;
+  padding-left: 1.5rem;
+  padding-right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
   background-color: #2292ee;
   border-radius: 6px;
   box-shadow: 0 4px 8px #2292ee22;
-  color: #fff;
   font-weight: 600;
+  color: #fff;
+  overflow: hidden;
+}
+
+.customerButtonClose {
+  height: 100%;
+  background-color: #21659c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 3rem;
+  margin-left: 1.5rem;
 }

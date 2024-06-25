@@ -1,6 +1,6 @@
 <main class="chatMain">
     <div *ngIf="currentRole == 'ADMIN'" class="customerList">
-        <div class="customerButton" *ngFor="let user of queue; let i = index" (click)="moveToCustomerRoom(user.chatroomId)">{{user.username}}</div>
+        <div [ngClass]="user.username == assignedCustomer?.username ? 'activeCustomerButton' : 'customerButton'" *ngFor="let user of queue; let i = index" (click)="assignCustomer(user.username)">{{user.username}}<div class="customerButtonClose" *ngIf="user.username == assignedCustomer?.username">x</div></div>
     </div>
     <div style="width: 100%;">
         <app-message *ngFor="let message of chatHistory" [message]="message"></app-message>
