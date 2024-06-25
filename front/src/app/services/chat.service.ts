@@ -4,6 +4,7 @@ import { CompatClient, IMessage, Stomp, StompSubscription, messageCallbackType }
 import * as SockJS from 'sockjs-client';
 import { AuthService } from './auth.service';
 import { IChatMessageType } from '../interfaces/IChatMessageType';
+import { IUser } from '../interfaces/IUser';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,14 @@ export class ChatService {
   private socket! : WebSocket
   private stompClient! : CompatClient
   private subs : StompSubscription[] = []
+
+  /*assignedCustomer : IUser = {
+    username: "",
+    role: "CUSTOMER",
+    chatroomId: "",
+    id: 0,
+    email: ""
+  }*/
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
@@ -37,7 +46,7 @@ export class ChatService {
     this.stompClient.connect({}, (info : any) => {
       // Sends a message indicating the user is joining a private room
       // this.sendMessage_UserJoiningPrivateRoom()
-      this.sendMessage({isPrivate : true, type : "JOIN"}, "", this.authService.getLoggedUserPrivateRoomId())
+      this.sendMessage({isMessagePrivate : true, type : "JOIN"}, "", this.authService.getLoggedUserPrivateRoomId())
       const room = privateChatroomId ? privateChatroomId : ""
       // Subscribes to the specified room (or general chat if no room ID is provided)
       this.subscribe(room, callback)
@@ -65,16 +74,16 @@ export class ChatService {
   }
 
   // !!! to fix : privateroomid should be retrieved from selected user if admin or logged user if customer and not as a param
-  sendMessage({isPrivate, type} : IChatMessageType, message? : string, privateRoomId? : string){
+  sendMessage({isMessagePrivate, type} : IChatMessageType, message? : string, privateRoomId? : string){
     if (this.stompClient) {
-      if(isPrivate && !privateRoomId) return
+      if(isMessagePrivate && !privateRoomId) return
 
       // message is sent to the public endpoint by default
       let endpoint = type == "CHAT" ? '/ws/chat.sendMessage' : '/ws/chat.addUser'
 
       // endpoint replaced by a private one if necessary
-      if(isPrivate && type == "CHAT") endpoint = '/ws/chat/sendMessage/' + privateRoomId
-      if(isPrivate && type == "JOIN") endpoint = '/ws/chat/addUser/' + this.authService.getLoggedUserPrivateRoomId()
+      if(isMessagePrivate && type == "CHAT") endpoint = '/ws/chat/sendMessage/' + privateRoomId
+      if(isMessagePrivate && type == "JOIN") endpoint = '/ws/chat/addUser/' + this.authService.getLoggedUserPrivateRoomId()
 
       if(type == "CHAT") {
         this.stompClient.send(endpoint, {}, JSON.stringify({ content: message, sender: this.authService.getLoggedUserName(), type : "CHAT"}))
@@ -86,4 +95,12 @@ export class ChatService {
       }
     }
   }
+
+  /*setAssignedUserCustomer(user : IUser){
+    this.assignedCustomer = user
+  }
+
+  getAssignedCustomer(){
+    return this.assignedCustomer
+  }*/
 }
