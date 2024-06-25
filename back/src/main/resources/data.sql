@@ -1,2 +1,3 @@
 INSERT INTO `users` (`username`, `email`, `password`, `role`, `chatroom_id`) VALUES ('guest', 'guest@poc.com', 'guest', 'USER', 'guestroom1');
+INSERT INTO `users` (`username`, `email`, `password`, `role`, `chatroom_id`) VALUES ('guest2', 'guest2@poc.com', 'guest2', 'USER', 'guestroom2');
 INSERT INTO `users` (`username`, `email`, `password`, `role`, `chatroom_id`) VALUES ('admin', 'admin@poc.com', 'admin', 'ADMIN', 'adminroom1');
