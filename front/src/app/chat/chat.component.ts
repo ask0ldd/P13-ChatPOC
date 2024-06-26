@@ -42,7 +42,13 @@ export class ChatComponent implements OnInit, OnDestroy {
     } 
     else {
       this.chatService.connect(this.displayReceivedMessageCallback)
-      this.refreshQueue()
+      // retrieve the queue and autorefresh it every 
+      this.queueSubscription = this.queueService.getAutoRefresh$(15).subscribe({
+        next : (customers) => {
+          this.queue = customers
+        }
+      })
+      // this.refreshQueue()
       this.currentRole = this.authService.getLoggedUserRole()
     }
   }
@@ -64,14 +70,14 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.messageTextarea.nativeElement.value = ""
   }
 
-  refreshQueue(){
+  /*refreshQueue(){
     this.queueSubscription = this.queueService.get$().pipe(take(1)).subscribe({
       next : (customers) => {
         // console.log('data : ' + JSON.stringify(data))
         this.queue = customers
       }
     })
-  }
+  }*/
 
   moveToCustomerRoom(chatroomId : string){
     // this.activeCustomerChatroomId = chatroomId
