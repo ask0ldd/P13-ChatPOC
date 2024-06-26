@@ -7,5 +7,6 @@ import lombok.Data;
 public class MessageDto {
     private String content;
     private String sender;
+    private String chatroomId;
     private MessageType type;
 }

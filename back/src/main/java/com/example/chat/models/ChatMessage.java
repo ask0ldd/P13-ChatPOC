@@ -32,6 +32,6 @@ public class ChatMessage {
     private LocalDateTime sentAt;
 
     @ManyToOne
-    @JoinColumn(name = "chatsession_id", nullable = false)
-    private ChatSession session;
+    @JoinColumn(name = "chatroom_id", nullable = false)
+    private ChatRoom chatroom;
 }

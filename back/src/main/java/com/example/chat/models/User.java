@@ -25,7 +25,7 @@ public class User {
     // time + user.id
     @NonNull
     @Column(name = "chatroom_id", unique = true)
-    private String chatroomId;
+    private String chatRoomId;
 
     @NonNull
     @Column(name = "username", unique = true)

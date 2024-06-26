@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChatSession {
+public class ChatRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -22,7 +22,7 @@ public class ChatSession {
     @Column(name = "name", unique = true)
     private String name;*/
 
-    @OneToMany(mappedBy = "session")
+    @OneToMany(mappedBy = "chatroom")
     private List<ChatMessage> chatMessages;
 
     @OneToOne

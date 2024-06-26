@@ -1,7 +1,7 @@
 package com.example.chat.services.interfaces;
 
-import com.example.chat.models.ChatSession;
+import com.example.chat.models.ChatRoom;
 
-public interface ISessionService {
-    public ChatSession getSession(String username);
+public interface IChatRoomService {
+    public ChatRoom getHistory(String username);
 }
