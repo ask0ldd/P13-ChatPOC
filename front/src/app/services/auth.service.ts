@@ -25,6 +25,10 @@ export class AuthService {
     return this.httpClient.post<ILoginResponse>(`${this.pathService}/login`, {username : username})
   }
 
+  disconnect(){
+    return this.httpClient.post(`${this.pathService}/disconnect`, {username : this.loggedUser.username})
+  }
+
   getLoggedUserName(){
     return this.loggedUser.username
   }

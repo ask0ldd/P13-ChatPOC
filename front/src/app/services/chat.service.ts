@@ -47,9 +47,13 @@ export class ChatService {
       // Sends a message indicating the user is joining a private room
       // this.sendMessage_UserJoiningPrivateRoom()
       this.sendMessage({isMessagePrivate : true, type : "JOIN"}, "", this.authService.getLoggedUserPrivateRoomId())
-      const room = privateChatroomId ? privateChatroomId : ""
+      //const room = privateChatroomId ? privateChatroomId : ""
       // Subscribes to the specified room (or general chat if no room ID is provided)
-      this.subscribe(room, callback)
+      if(!privateChatroomId) {
+        this.subscribe(callback)
+      }else{
+        this.subscribe(callback, privateChatroomId)
+      }
       console.log('Connected to WebSocket server : ' + info);
     }, (error : string) => {
       // Connection failed
@@ -64,10 +68,10 @@ export class ChatService {
     }
   }
 
-  subscribe(chatroomId : string, callback : messageCallbackType) {
+  subscribe(callback : messageCallbackType, chatroomId? : string) {
     if (this.stompClient) {
       // const publicTopic = '/topic/public'
-      const privateRoom = chatroomId == "" ? '/queue/' + this.authService.getLoggedUserPrivateRoomId() : '/queue/' + chatroomId
+      const privateRoom = chatroomId == null ? '/queue/' + this.authService.getLoggedUserPrivateRoomId() : '/queue/' + chatroomId
       const sub = this.stompClient.subscribe(privateRoom, callback);
       this.subs.push(sub)
     }
@@ -86,7 +90,7 @@ export class ChatService {
       if(isMessagePrivate && type == "JOIN") endpoint = '/ws/chat/addUser/' + this.authService.getLoggedUserPrivateRoomId()
 
       if(type == "CHAT") {
-        this.stompClient.send(endpoint, {}, JSON.stringify({ content: message, sender: this.authService.getLoggedUserName(), type : "CHAT"}))
+        this.stompClient.send(endpoint, {}, JSON.stringify({ content: message, sender: this.authService.getLoggedUserName(), type : "CHAT" }))
       }
 
       if(type == "JOIN") {
@@ -96,11 +100,8 @@ export class ChatService {
     }
   }
 
-  /*setAssignedUserCustomer(user : IUser){
-    this.assignedCustomer = user
+  getHistory$(username : string){
+
   }
 
-  getAssignedCustomer(){
-    return this.assignedCustomer
-  }*/
 }
