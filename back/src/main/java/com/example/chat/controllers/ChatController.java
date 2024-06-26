@@ -4,7 +4,9 @@ import com.example.chat.dtos.payloads.MessageDto;
 import com.example.chat.dtos.responses.ChatMessageResponseDto;
 import com.example.chat.exceptions.UserNotFoundException;
 import com.example.chat.models.User;
+import com.example.chat.repositories.ChatMessageRepository;
 import com.example.chat.repositories.UserRepository;
+import com.example.chat.services.MessageService;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -22,9 +24,11 @@ import java.time.LocalDateTime;
 public class ChatController {
 
     private final UserRepository userRepository;
+    private final MessageService messageService;
 
-    public ChatController(UserRepository userRepository){
+    public ChatController(MessageService messageService, UserRepository userRepository){
         this.userRepository = userRepository;
+        this.messageService = messageService;
     }
 
     /**
@@ -64,32 +68,34 @@ public class ChatController {
     }
 
     // private rooms
-    @MessageMapping("/chat/sendMessage/{roomId}")
-    @SendTo("/queue/{roomId}")
-    public ChatMessageResponseDto sendMessage(@DestinationVariable String roomId, @Payload MessageDto message) {
+    @MessageMapping("/chat/sendMessage/{chatRoomId}")
+    @SendTo("/queue/{chatRoomId}")
+    public ChatMessageResponseDto sendMessage(@DestinationVariable String chatRoomId, @Payload MessageDto message) {
         System.out.println("message : " + message.getContent());
-        User user = userRepository.findByUsername(message.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+        ChatMessage chatMessage = messageService.saveMessage(chatRoomId, message);
         return ChatMessageResponseDto.builder()
                 .type(message.getType())
                 .content(message.getContent())
-                .sender(user.getUsername())
+                .sender(chatMessage.getSender().getUsername())
+                .chatroomId(chatRoomId)
                 .sentAt(LocalDateTime.now())
                 .build();
     }
 
     // private rooms
-    @MessageMapping("/chat/addUser/{roomId}")
-    @SendTo("/queue/{roomId}")
-    public ChatMessageResponseDto addUser(@DestinationVariable String roomId, @Payload MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
+    @MessageMapping("/chat/addUser/{chatRoomId}")
+    @SendTo("/queue/{chatRoomId}")
+    public ChatMessageResponseDto addUser(@DestinationVariable String chatRoomId, @Payload MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
         // add username and roomId to websocket session
         headerAccessor.getSessionAttributes().put("username", message.getSender());
-        headerAccessor.getSessionAttributes().put("roomId", roomId);
-        System.out.println("User connected : " + message.getSender() + " to room: " + roomId);
+        headerAccessor.getSessionAttributes().put("roomId", chatRoomId);
+        System.out.println("User connected : " + message.getSender() + " to room: " + chatRoomId);
         User user = userRepository.findByUsername(message.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         return ChatMessageResponseDto.builder()
                 .type(message.getType())
                 .content(message.getSender() + " connected.")
                 .sender(user.getUsername())
+                .chatroomId(chatRoomId)
                 .sentAt(LocalDateTime.now())
                 .build();
     }
