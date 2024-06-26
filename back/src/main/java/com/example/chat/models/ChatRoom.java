@@ -6,25 +6,26 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity(name = "sessions")
+@Getter
+@Setter
 @Data
-@Builder
-@NoArgsConstructor
-@RequiredArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class ChatSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @NonNull
+    /*@NonNull
     @Column(name = "name", unique = true)
-    private String name;
+    private String name;*/
 
     @OneToMany(mappedBy = "session")
     private List<ChatMessage> chatMessages;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private User user; // !!! replace with owner
 }
