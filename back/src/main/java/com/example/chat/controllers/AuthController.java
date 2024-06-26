@@ -1,5 +1,6 @@
 package com.example.chat.controllers;
 
+import com.example.chat.dtos.payloads.DisconnectRequestDto;
 import com.example.chat.dtos.payloads.LoginRequestDto;
 import com.example.chat.dtos.responses.UserResponseDto;
 import com.example.chat.models.User;
@@ -24,9 +25,16 @@ public class AuthController {
     }
 
     @PostMapping("auth/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequest) {
+    public ResponseEntity<UserResponseDto> login(@RequestBody LoginRequestDto loginRequest) {
         User user = userService.getUser(loginRequest.getUsername());
-        if(user.getRole().equals("USER"))queueService.addUser(user);
+        if(user.getRole().equals("USER")) queueService.addUser(user);
         return ResponseEntity.ok().body(new UserResponseDto(user));
+    }
+
+    @PostMapping("auth/disconnect")
+    public ResponseEntity<?> disconnect(@RequestBody DisconnectRequestDto disconnectRequest) {
+        User user = userService.getUser(disconnectRequest.getUsername());
+        queueService.removeUser(user);
+        return ResponseEntity.ok().build();
     }
 }
