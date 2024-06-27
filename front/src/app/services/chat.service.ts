@@ -5,6 +5,8 @@ import * as SockJS from 'sockjs-client';
 import { AuthService } from './auth.service';
 import { IChatMessageType } from '../interfaces/IChatMessageType';
 import { IUser } from '../interfaces/IUser';
+import { IChatRoomHistory } from '../interfaces/IChatRoomHistory';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +26,7 @@ export class ChatService {
     email: ""
   }*/
 
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  constructor(private httpClient: HttpClient, private authService: AuthService) { }
 
   /**
    * Establishes a WebSocket connection to the chat server and sets up a STOMP client.
@@ -100,8 +102,8 @@ export class ChatService {
     }
   }
 
-  getHistory$(username : string){
-
+  getHistory$(chatroomId : string) : Observable<IChatRoomHistory>{
+    return this.httpClient.get<IChatRoomHistory>(`api/history/${chatroomId}`)
   }
 
 }

@@ -42,6 +42,7 @@ export class AuthService {
   }
 
   setLoggedUser(user : IUser){
+    console.log(user)
     this.loggedUser = user
   }
 }
