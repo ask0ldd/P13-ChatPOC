@@ -2,10 +2,13 @@ package com.example.chat.controllers;
 
 import com.example.chat.dtos.payloads.MessageDto;
 import com.example.chat.dtos.responses.ChatMessageResponseDto;
+import com.example.chat.dtos.responses.ChatRoomHistoryResponseDto;
 import com.example.chat.exceptions.UserNotFoundException;
+import com.example.chat.models.ChatMessage;
+import com.example.chat.models.ChatRoomHistory;
 import com.example.chat.models.User;
-import com.example.chat.repositories.ChatMessageRepository;
 import com.example.chat.repositories.UserRepository;
+import com.example.chat.services.ChatRoomService;
 import com.example.chat.services.MessageService;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -13,9 +16,10 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
-
-import com.example.chat.models.ChatMessage;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDateTime;
 
@@ -25,10 +29,12 @@ public class ChatController {
 
     private final UserRepository userRepository;
     private final MessageService messageService;
+    private final ChatRoomService chatRoomService;
 
-    public ChatController(MessageService messageService, UserRepository userRepository){
+    public ChatController(MessageService messageService, UserRepository userRepository, ChatRoomService chatRoomService){
         this.userRepository = userRepository;
         this.messageService = messageService;
+        this.chatRoomService = chatRoomService;
     }
 
     /**
@@ -40,7 +46,7 @@ public class ChatController {
      */
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public") // linked to websocketconfig registry.enableSimpleBroker("/topic/", "/queue/")
-    public ChatMessageResponseDto sendMessage(@Payload MessageDto message) {
+    public ChatMessageResponseDto sendPublicMessage(@Payload MessageDto message) {
         System.out.println("message : " + message.getContent());
         User user = userRepository.findByUsername(message.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         return ChatMessageResponseDto.builder()
@@ -54,7 +60,7 @@ public class ChatController {
     // public room
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/public") // linked to websocketconfig registry.enableSimpleBroker("/topic/", "/queue/")
-    public ChatMessageResponseDto addUser(@Payload MessageDto message, SimpMessageHeaderAccessor headerAccessor){
+    public ChatMessageResponseDto addPublicUser(@Payload MessageDto message, SimpMessageHeaderAccessor headerAccessor){
         // add username to websocket session
         headerAccessor.getSessionAttributes().put("username", message.getSender());
         System.out.println("User connected : " + message.getSender());
@@ -70,7 +76,7 @@ public class ChatController {
     // private rooms
     @MessageMapping("/chat/sendMessage/{chatRoomId}")
     @SendTo("/queue/{chatRoomId}")
-    public ChatMessageResponseDto sendMessage(@DestinationVariable String chatRoomId, @Payload MessageDto message) {
+    public ChatMessageResponseDto sendPrivateMessage(@DestinationVariable String chatRoomId, @Payload MessageDto message) {
         System.out.println("message : " + message.getContent());
         ChatMessage chatMessage = messageService.saveMessage(chatRoomId, message);
         return ChatMessageResponseDto.builder()
@@ -85,7 +91,7 @@ public class ChatController {
     // private rooms
     @MessageMapping("/chat/addUser/{chatRoomId}")
     @SendTo("/queue/{chatRoomId}")
-    public ChatMessageResponseDto addUser(@DestinationVariable String chatRoomId, @Payload MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
+    public ChatMessageResponseDto addPrivateUser(@DestinationVariable String chatRoomId, @Payload MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
         // add username and roomId to websocket session
         headerAccessor.getSessionAttributes().put("username", message.getSender());
         headerAccessor.getSessionAttributes().put("roomId", chatRoomId);
@@ -98,5 +104,12 @@ public class ChatController {
                 .chatroomId(chatRoomId)
                 .sentAt(LocalDateTime.now())
                 .build();
+    }
+
+    @GetMapping("/api/history/{chatroomId}")
+    @ResponseBody
+    public ChatRoomHistoryResponseDto getHistory(@PathVariable final String chatroomId){
+        ChatRoomHistory chatroomHistory = chatRoomService.getHistory(chatroomId);
+        return new ChatRoomHistoryResponseDto(chatroomHistory);
     }
 }

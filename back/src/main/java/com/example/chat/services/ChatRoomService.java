@@ -2,7 +2,7 @@ package com.example.chat.services;
 
 import com.example.chat.exceptions.SessionNotFoundException;
 import com.example.chat.exceptions.UserNotFoundException;
-import com.example.chat.models.ChatRoom;
+import com.example.chat.models.ChatRoomHistory;
 import com.example.chat.models.User;
 import com.example.chat.repositories.ChatRoomRepository;
 import com.example.chat.repositories.UserRepository;
@@ -20,8 +20,9 @@ public class ChatRoomService implements IChatRoomService {
         this.chatRoomRepository = chatRoomRepository;
     }
 
-    public ChatRoom getHistory(String username){
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+    public ChatRoomHistory getHistory(String chatroomId){
+        User user = userRepository.findByChatRoomId(chatroomId).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+        // !!! replace exception with HistoryNotFound
         return chatRoomRepository.findByUser(user).orElseThrow(() -> new SessionNotFoundException("Target session cannot be found."));
     }
 }

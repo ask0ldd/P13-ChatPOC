@@ -3,7 +3,7 @@ package com.example.chat.services;
 import com.example.chat.dtos.payloads.MessageDto;
 import com.example.chat.exceptions.UserNotFoundException;
 import com.example.chat.models.ChatMessage;
-import com.example.chat.models.ChatRoom;
+import com.example.chat.models.ChatRoomHistory;
 import com.example.chat.models.User;
 import com.example.chat.repositories.ChatMessageRepository;
 import com.example.chat.repositories.ChatRoomRepository;
@@ -27,9 +27,9 @@ public class MessageService implements IMessageService {
     public ChatMessage saveMessage(String chatRoomId, MessageDto receivedMessage){
         User user = userRepository.findByChatRoomId(chatRoomId).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         // ChatSession session = chatSessionRepository.findByUser(user).orElseThrow(() -> new SessionNotFoundException("Target session cannot be found."));
-        ChatRoom chatroom = chatRoomRepository.findByUser(user)
-                .orElseGet(() -> ChatRoom.builder().user(user).build());
-        ChatRoom newChatRoom = chatRoomRepository.save(chatroom);
+        ChatRoomHistory chatroom = chatRoomRepository.findByUser(user)
+                .orElseGet(() -> ChatRoomHistory.builder().user(user).build());
+        ChatRoomHistory newChatRoom = chatRoomRepository.save(chatroom);
         ChatMessage chatMessage = ChatMessage.builder()
                 .sender(user)
                 .type(receivedMessage.getType())
