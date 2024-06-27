@@ -82,6 +82,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   moveToCustomerRoom(chatroomId : string){
     // this.activeCustomerChatroomId = chatroomId
     this.chatService.disconnect()
+    this.chatService.getHistory$(chatroomId).pipe(take(1)).subscribe({
+      next : (chatRoomHistory) => this.chatHistory = chatRoomHistory.messages
+    })
     this.chatService.connect(this.displayReceivedMessageCallback, chatroomId)
     // doesn't display?
     this.chatService.sendMessage({isMessagePrivate : true, type : "CHAT"}, "An Admin is here to help you.", chatroomId)
