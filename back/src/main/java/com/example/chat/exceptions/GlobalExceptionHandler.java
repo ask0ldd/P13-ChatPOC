@@ -8,8 +8,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(SessionNotFoundException.class)
-    public ResponseEntity<DefaultResponseDto> handleUserNotFoundExceptions(SessionNotFoundException ex) {
+    @ExceptionHandler(HistoryNotFoundException.class)
+    public ResponseEntity<DefaultResponseDto> handleHistoryrNotFoundExceptions(HistoryNotFoundException ex) {
+        return new ResponseEntity<DefaultResponseDto>(new DefaultResponseDto("History not found."), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<DefaultResponseDto> handleUserNotFoundExceptions(UserNotFoundException ex) {
         return new ResponseEntity<DefaultResponseDto>(new DefaultResponseDto("User not found."), HttpStatus.UNAUTHORIZED);
     }
 }
