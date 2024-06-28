@@ -25,7 +25,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   queueSubscription! : Subscription
 
   currentRole! : TUserRole
-  // activeCustomerChatroomId = ""
 
   assignedCustomer : IUser | null = null
 
@@ -41,6 +40,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.router.navigate(['/']) 
     } 
     else {
+      // !!! should load chathistory if "CUSTOMER"
       this.chatService.connect(this.displayReceivedMessageCallback)
       // retrieve the queue and autorefresh it every 
       this.queueSubscription = this.queueService.getAutoRefresh$(15).subscribe({
@@ -48,53 +48,40 @@ export class ChatComponent implements OnInit, OnDestroy {
           this.queue = customers
         }
       })
-      // this.refreshQueue()
       this.currentRole = this.authService.getLoggedUserRole()
     }
   }
 
   // action to trigger when a new message is received
   displayReceivedMessageCallback = (message : IMessage) => {
-    // console.log(JSON.stringify(message.body))
     this.chatHistory.push(JSON.parse(message.body) as IChatMessage)
   }
 
   sendMessage(){
-    // if admin & customer selected
+    // if admin, can only send a message if a customer has been previously selected
     if(this.currentRole == "ADMIN") {
-      if(this.assignedCustomer?.chatroomId != "") this.chatService.sendMessage({isMessagePrivate : true, type : "CHAT"}, this.messageTextarea.nativeElement.value, this.assignedCustomer?.chatroomId)
+      if(this.assignedCustomer?.chatroomId != "") this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.assignedCustomer?.chatroomId)
     } else {
-      // if customer
-      this.chatService.sendMessage({isMessagePrivate : true, type : "CHAT"}, this.messageTextarea.nativeElement.value, this.authService.getLoggedUserPrivateRoomId())
+      // if customer, send a message to his own room
+      this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.authService.getLoggedUserPrivateRoomId())
     }
     this.messageTextarea.nativeElement.value = ""
   }
 
-  /*refreshQueue(){
-    this.queueSubscription = this.queueService.get$().pipe(take(1)).subscribe({
-      next : (customers) => {
-        // console.log('data : ' + JSON.stringify(data))
-        this.queue = customers
-      }
-    })
-  }*/
-
-  moveToCustomerRoom(chatroomId : string){
-    // this.activeCustomerChatroomId = chatroomId
+  goToAssignedCustomerRoom(chatroomId : string){
+    if(this.assignedCustomer == null) return
     this.chatService.disconnect()
     this.chatService.getHistory$(chatroomId).pipe(take(1)).subscribe({
       next : (chatRoomHistory) => this.chatHistory = chatRoomHistory.messages
     })
     this.chatService.connect(this.displayReceivedMessageCallback, chatroomId)
-    // doesn't display?
-    this.chatService.sendMessage({isMessagePrivate : true, type : "CHAT"}, "An Admin is here to help you.", chatroomId)
   }
 
-  assignCustomer(customerName : string){
+  assignCustomerToAdmin(customerName : string){
     const customer = this.queue.find(customer => customer.username == customerName)
     if(customer != null) {
       this.assignedCustomer = customer
-      this.moveToCustomerRoom(this.assignedCustomer.chatroomId)
+      this.goToAssignedCustomerRoom(this.assignedCustomer.chatroomId)
     }
   }
 
