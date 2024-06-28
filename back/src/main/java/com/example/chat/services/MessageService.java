@@ -6,7 +6,7 @@ import com.example.chat.models.ChatMessage;
 import com.example.chat.models.ChatRoomHistory;
 import com.example.chat.models.User;
 import com.example.chat.repositories.ChatMessageRepository;
-import com.example.chat.repositories.ChatRoomRepository;
+import com.example.chat.repositories.ChatRoomHistoryRepository;
 import com.example.chat.repositories.UserRepository;
 import com.example.chat.services.interfaces.IMessageService;
 import org.springframework.stereotype.Service;
@@ -15,21 +15,20 @@ import org.springframework.stereotype.Service;
 public class MessageService implements IMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
-    private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomHistoryRepository chatRoomHistoryRepository;
     private final UserRepository userRepository;
 
-    public MessageService(ChatMessageRepository chatMessageRepository, ChatRoomRepository chatRoomRepository, UserRepository userRepository){
+    public MessageService(ChatMessageRepository chatMessageRepository, ChatRoomHistoryRepository chatRoomHistoryRepository, UserRepository userRepository){
         this.chatMessageRepository = chatMessageRepository;
-        this.chatRoomRepository = chatRoomRepository;
+        this.chatRoomHistoryRepository = chatRoomHistoryRepository;
         this.userRepository = userRepository;
     }
 
     public ChatMessage saveMessage(String chatRoomId, MessageDto receivedMessage){
         User user = userRepository.findByChatRoomId(chatRoomId).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
-        // ChatSession session = chatSessionRepository.findByUser(user).orElseThrow(() -> new SessionNotFoundException("Target session cannot be found."));
-        ChatRoomHistory chatroom = chatRoomRepository.findByUser(user)
-                .orElseGet(() -> ChatRoomHistory.builder().user(user).build());
-        ChatRoomHistory newChatRoom = chatRoomRepository.save(chatroom);
+        ChatRoomHistory chatroom = chatRoomHistoryRepository.findByOwner(user)
+                .orElseGet(() -> ChatRoomHistory.builder().owner(user).build());
+        ChatRoomHistory newChatRoom = chatRoomHistoryRepository.save(chatroom);
         ChatMessage chatMessage = ChatMessage.builder()
                 .sender(user)
                 .type(receivedMessage.getType())

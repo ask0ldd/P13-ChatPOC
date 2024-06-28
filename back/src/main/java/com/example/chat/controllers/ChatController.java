@@ -8,7 +8,7 @@ import com.example.chat.models.ChatMessage;
 import com.example.chat.models.ChatRoomHistory;
 import com.example.chat.models.User;
 import com.example.chat.repositories.UserRepository;
-import com.example.chat.services.ChatRoomService;
+import com.example.chat.services.ChatRoomHistoryService;
 import com.example.chat.services.MessageService;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -29,12 +29,12 @@ public class ChatController {
 
     private final UserRepository userRepository;
     private final MessageService messageService;
-    private final ChatRoomService chatRoomService;
+    private final ChatRoomHistoryService chatRoomHistoryService;
 
-    public ChatController(MessageService messageService, UserRepository userRepository, ChatRoomService chatRoomService){
+    public ChatController(MessageService messageService, UserRepository userRepository, ChatRoomHistoryService chatRoomHistoryService){
         this.userRepository = userRepository;
         this.messageService = messageService;
-        this.chatRoomService = chatRoomService;
+        this.chatRoomHistoryService = chatRoomHistoryService;
     }
 
     /**
@@ -82,7 +82,7 @@ public class ChatController {
         return ChatMessageResponseDto.builder()
                 .type(message.getType())
                 .content(message.getContent())
-                .sender(chatMessage.getSender().getUsername())
+                .sender(message.getSender())
                 .chatroomId(chatRoomId)
                 .sentAt(LocalDateTime.now())
                 .build();
@@ -109,7 +109,7 @@ public class ChatController {
     @GetMapping("/api/history/{chatroomId}")
     @ResponseBody
     public ChatRoomHistoryResponseDto getHistory(@PathVariable final String chatroomId){
-        ChatRoomHistory chatroomHistory = chatRoomService.getHistory(chatroomId);
+        ChatRoomHistory chatroomHistory = chatRoomHistoryService.getHistory(chatroomId);
         return new ChatRoomHistoryResponseDto(chatroomHistory);
     }
 }
