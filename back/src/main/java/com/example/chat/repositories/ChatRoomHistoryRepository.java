@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface ChatRoomRepository extends JpaRepository<ChatRoomHistory, Long> {
-    // Optional<ChatSession> findByName(String sessionName);
-    Optional<ChatRoomHistory> findByUser(User user);
+public interface ChatRoomHistoryRepository extends JpaRepository<ChatRoomHistory, Long> {
+    Optional<ChatRoomHistory> findByOwner(User user);
 }

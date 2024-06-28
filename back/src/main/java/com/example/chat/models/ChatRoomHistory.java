@@ -18,14 +18,10 @@ public class ChatRoomHistory {
     @Column(name = "id")
     private Long id;
 
-    /*@NonNull
-    @Column(name = "name", unique = true)
-    private String name;*/
-
     @OneToMany(mappedBy = "chatroom")
     private List<ChatMessage> chatMessages;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user; // !!! replace with owner
+    private User owner;
 }
