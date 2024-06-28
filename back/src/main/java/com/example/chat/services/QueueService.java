@@ -12,11 +12,9 @@ import java.util.Set;
 public class QueueService implements IQueueService {
 
     private Set<User> chatQueue;
-    // private final UserRepository userRepository;
 
     public QueueService(UserRepository userRepository){
         chatQueue = new HashSet<>();
-        // this.userRepository = userRepository;
     }
 
     public Set<User> getUsers(){
@@ -24,7 +22,6 @@ public class QueueService implements IQueueService {
     }
 
     public void addUser(User user){
-        // User user = this.userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         this.chatQueue.add(user);
     }
 
