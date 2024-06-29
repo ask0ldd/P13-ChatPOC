@@ -35,11 +35,11 @@ export class QueueService {
   }
 
   removeUser$(username : string){
-    return this.httpClient.post<IUser[]>('api/queue/remove', username)
+    return this.httpClient.post<IUser[]>('api/queue/remove', {username : username})
   }
 
   removeSelf$(){
-    return this.httpClient.post<IUser[]>('api/queue/remove', this.authService.getLoggedUserName())
+    return this.httpClient.post<IUser[]>('api/queue/remove', {username : this.authService.getLoggedUserName()})
   }
 
   /*setSelectedUser(user : IUser){

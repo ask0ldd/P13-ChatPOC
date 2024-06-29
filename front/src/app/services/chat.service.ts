@@ -82,8 +82,8 @@ export class ChatService {
       }
 
       if(messageType == "JOIN") {
-        const user = this.authService.getLoggedUserName()
-        this.stompClient.send(endpoint, {}, JSON.stringify({ content: user, sender: user, type : "JOIN"}))
+        const username = this.authService.getLoggedUserName()
+        this.stompClient.send(endpoint, {}, JSON.stringify({ content: username, sender: username, type : "JOIN"}))
       }
     }
   }
