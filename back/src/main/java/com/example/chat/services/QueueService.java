@@ -9,6 +9,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
+// @Component
+// list thread safe : ConcurrentSkipListSet
+// Set<String> synchronizedSet = Collections.synchronizedSet(new HashSet<>());
 public class QueueService implements IQueueService {
 
     private Set<User> chatQueue;
@@ -21,16 +24,19 @@ public class QueueService implements IQueueService {
         return this.chatQueue;
     }
 
-    public void addUser(User user){
+    public Set<User> addUser(User user){
         this.chatQueue.add(user);
+        return this.chatQueue;
     }
 
-    public void removeUser(User user){
+    public Set<User> removeUser(User user){
         this.chatQueue.removeIf(inQueueUser -> inQueueUser.equals(user));
+        return this.chatQueue;
     }
 
-    public void removeUser(String username){
+    public Set<User> removeUser(String username){
         this.chatQueue.removeIf(inQueueUser -> inQueueUser.getUsername().equals(username));
+        return this.chatQueue;
     }
 
 }

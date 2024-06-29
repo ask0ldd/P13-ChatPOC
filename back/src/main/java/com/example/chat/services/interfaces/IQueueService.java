@@ -7,9 +7,9 @@ import java.util.Set;
 public interface IQueueService {
     public Set<User> getUsers();
 
-    public void addUser(User user);
+    public Set<User> addUser(User user);
 
-    public void removeUser(User user);
+    public Set<User> removeUser(User user);
 
-    public void removeUser(String username);
+    public Set<User> removeUser(String username);
 }
