@@ -25,12 +25,13 @@ public class MessageService implements IMessageService {
     }
 
     public ChatMessage saveMessage(String chatRoomId, MessageDto receivedMessage){
-        User user = userRepository.findByChatRoomId(chatRoomId).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
-        ChatRoomHistory chatroom = chatRoomHistoryRepository.findByOwner(user)
-                .orElseGet(() -> ChatRoomHistory.builder().owner(user).build());
+        User chatroomOwner = userRepository.findByChatRoomId(chatRoomId).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+        User sender = userRepository.findByUsername(receivedMessage.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+        ChatRoomHistory chatroom = chatRoomHistoryRepository.findByOwner(chatroomOwner)
+                .orElseGet(() -> ChatRoomHistory.builder().owner(chatroomOwner).build());
         ChatRoomHistory newChatRoom = chatRoomHistoryRepository.save(chatroom);
         ChatMessage chatMessage = ChatMessage.builder()
-                .sender(user)
+                .sender(sender)
                 .type(receivedMessage.getType())
                 .content(receivedMessage.getContent())
                 .chatroom(newChatRoom).build();
