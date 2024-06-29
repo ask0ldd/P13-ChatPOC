@@ -7,6 +7,9 @@
             </div>
         </div>
     </div>
+    <div *ngIf="assignedCustomer?.username != '' && currentRole == 'ADMIN'">
+        You are speaking with {{assignedCustomer?.username}}
+    </div>
     <div style="width: 100%;">
         <app-message *ngFor="let message of chatHistory" [message]="message"></app-message>
     </div>

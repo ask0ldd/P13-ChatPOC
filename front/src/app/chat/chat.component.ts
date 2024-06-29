@@ -36,19 +36,25 @@ export class ChatComponent implements OnInit, OnDestroy {
   ){ }
 
   ngOnInit(): void {
+    console.log(this.authService.getLoggedUserName())
+    // if the user is not logged, go back to login
     if(this.authService.getLoggedUserName() == "") {
       this.router.navigate(['/']) 
     } 
     else {
-      // !!! should load chathistory if "CUSTOMER"
+      // by default, the user is connected to its own chatroom
       this.chatService.connect(this.displayReceivedMessageCallback)
-      // retrieve the queue and autorefresh it every 
-      this.queueSubscription = this.queueService.getAutoRefresh$(15).subscribe({
-        next : (customers) => {
-          this.queue = customers
-        }
-      })
       this.currentRole = this.authService.getLoggedUserRole()
+      // if the user is an admin, retrieve the queue and autorefresh it every 
+      if(this.currentRole == "ADMIN") this.queueSubscription = this.queueService.getAutoRefresh$(15).subscribe({
+        next : (customers) =>  this.queue = customers,
+        error : () => this.queue = []
+      })
+      // if the user is a customer, retrieve the history of its own chatroom
+      if(this.currentRole == "CUSTOMER") this.chatService.getHistory$(this.authService.loggedUser.chatroomId).pipe(take(1)).subscribe({
+        next : (chatRoomHistory) => this.chatHistory = chatRoomHistory.messages,
+        error : () => this.chatHistory = []
+      })
     }
   }
 
@@ -81,6 +87,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     const customer = this.queue.find(customer => customer.username == customerName)
     if(customer != null) {
       this.assignedCustomer = customer
+      this.queueService.removeUser$(this.assignedCustomer.username).pipe(take(1)).subscribe({
+        next: (customers) => {
+          this.queue = customers
+        }
+      }).unsubscribe()
       this.goToAssignedCustomerRoom(this.assignedCustomer.chatroomId)
     }
   }
@@ -88,6 +99,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
       this.chatService.disconnect()
       if(this.queueSubscription) this.queueSubscription.unsubscribe()
-      this.queueService.removeSelf$().subscribe().unsubscribe()
+      this.queueService.removeSelf$().pipe(take(1)).subscribe().unsubscribe()
   }
 }
