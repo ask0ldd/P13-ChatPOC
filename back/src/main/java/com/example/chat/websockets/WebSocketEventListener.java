@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 @Component
-// @RequiredArgsConstructor
-@Slf4j // for logging purposes
 public class WebSocketEventListener {
 
     private final SimpMessageSendingOperations messageTemplate;
@@ -30,7 +28,7 @@ public class WebSocketEventListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
-        System.out.println("User disconnected :" + username);
+        System.out.println("User disconnected : " + username);
         var message = ChatMessage.builder()
                 .type(MessageType.LEAVE)
                 .sender(user)
