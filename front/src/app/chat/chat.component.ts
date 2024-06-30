@@ -5,7 +5,7 @@ import { IChatMessage } from '../interfaces/IChatMessage';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { QueueService } from '../services/queue.service';
-import { Subscription, take } from 'rxjs';
+import { Subscription, take, timer } from 'rxjs';
 import { IUser } from '../interfaces/IUser';
 import { TUserRole } from '../types/TUserRole';
 
@@ -22,7 +22,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   // !!! should be moved to chat service?
   chatHistory : IChatMessage[] = []
   queue : IUser[] = []
-  queueSubscription! : Subscription
+  private queueSubscription! : Subscription
+  private timerSubscription!: Subscription
 
   currentRole! : TUserRole
 
@@ -61,6 +62,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   // action to trigger when a new message is received
   displayReceivedMessageCallback = (message : IMessage) => {
     this.chatHistory.push(JSON.parse(message.body) as IChatMessage)
+    this.resetTimer()
   }
 
   sendMessage(){
@@ -72,6 +74,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.authService.getLoggedUserPrivateRoomId())
     }
     this.messageTextarea.nativeElement.value = ""
+    this.resetTimer()
   }
 
   goToAssignedCustomerRoom(chatroomId : string){
@@ -96,9 +99,26 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
+  startTimer() {
+    // one minute
+    this.timerSubscription = timer(0, 60000).subscribe(
+      () => this.closeChat()
+    )
+  }
+
+  resetTimer() {
+    if (this.timerSubscription) this.timerSubscription.unsubscribe()
+    this.startTimer()
+  }
+
+  closeChat(){
+    console.log("closing chat...")
+  }
+
   ngOnDestroy(): void {
       this.chatService.disconnect()
       if(this.queueSubscription) this.queueSubscription.unsubscribe()
+      if(this.timerSubscription) this.timerSubscription.unsubscribe()
       this.queueService.removeSelf$().pipe(take(1)).subscribe().unsubscribe()
   }
 }
