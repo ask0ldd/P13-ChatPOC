@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CompatClient, IMessage, Stomp, StompSubscription, messageCallbackType } from '@stomp/stompjs';
+import { CompatClient, IMessage, Stomp, StompHeaders, StompSubscription, messageCallbackType } from '@stomp/stompjs';
 import * as SockJS from 'sockjs-client';
 import { AuthService } from './auth.service';
 import { IChatRoomHistory } from '../interfaces/IChatRoomHistory';
@@ -38,26 +38,19 @@ export class ChatService {
     // Connect to the WebSocket server
     this.stompClient.connect({}, (info : any) => {
       // Sends a message indicating the user is joining a private room
-      this.sendMessage("JOIN", "", this.authService.getLoggedUserPrivateRoomId())
+      // this.sendMessage("JOIN", "", this.authService.getLoggedUserPrivateRoomId())
       // Subscribes to the specified room (or general chat if no room ID is provided)
       if(!privateChatroomId) {
         this.subscribe(callback)
       }else{
-        if(this.authService.getLoggedUserRole() == "ADMIN") this.sendMessage("CHAT", "An Admin is here to help you.", privateChatroomId)
-        this.subscribe(callback, privateChatroomId)
+        if(this.authService.getLoggedUserRole() == "ADMIN") this.sendMessage("JOIN", "An Admin is here to help you.", privateChatroomId)
+          this.subscribe(callback, privateChatroomId)
       }
       console.log('Connected to WebSocket server : ' + info);
     }, (error : string) => {
       // Connection failed
       console.error('Failed to connect to WebSocket server', error);
     });
-  }
-
-  disconnect() {
-    if (this.stompClient) {
-      if(this.subs.length > 0) this.subs.forEach(sub => sub.unsubscribe())
-      this.stompClient.disconnect();
-    }
   }
 
   subscribe(callback : messageCallbackType, chatroomId? : string) {
@@ -74,14 +67,19 @@ export class ChatService {
       let endpoint = messageType == "CHAT" ? '/ws/chat.sendMessage' : '/ws/chat.addUser'
 
       // endpoint replaced by a private one if necessary
-      if(privateRoomId && messageType == "CHAT") endpoint = '/ws/chat/sendMessage/' + privateRoomId
-      if(privateRoomId && messageType == "JOIN") endpoint = '/ws/chat/addUser/' + this.authService.getLoggedUserPrivateRoomId()
+      /*if(privateRoomId && messageType == "CHAT") endpoint = '/ws/chat/sendMessage/' + privateRoomId || this.authService.getLoggedUserPrivateRoomId()
+      if(privateRoomId && messageType == "JOIN") endpoint = '/ws/chat/addUser/' + this.authService.getLoggedUserPrivateRoomId()*/
 
       if(messageType == "CHAT") {
+        console.log("***CHAT***")
+        // endpoint replaced by a private one if necessary
+        if(privateRoomId) endpoint = '/ws/chat/sendMessage/' + privateRoomId
         this.stompClient.send(endpoint, {}, JSON.stringify({ content: message, sender: this.authService.getLoggedUserName(), type : "CHAT" }))
       }
 
       if(messageType == "JOIN") {
+        console.log("***JOIN***")
+        if(privateRoomId) endpoint = '/ws/chat/addUser/' + privateRoomId
         const username = this.authService.getLoggedUserName()
         this.stompClient.send(endpoint, {}, JSON.stringify({ content: username, sender: username, type : "JOIN"}))
       }
@@ -92,4 +90,10 @@ export class ChatService {
     return this.httpClient.get<IChatRoomHistory>(`api/history/${chatroomId}`)
   }
 
+  disconnect() {
+    if (this.stompClient) {
+      if(this.subs.length > 0) this.subs.forEach(sub => sub.unsubscribe())
+      this.stompClient.disconnect()
+    }
+  }
 }
