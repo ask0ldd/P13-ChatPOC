@@ -1,5 +1,6 @@
 package com.example.chat.websockets;
 
+import com.example.chat.dtos.responses.ChatMessageResponseDto;
 import com.example.chat.exceptions.UserNotFoundException;
 import com.example.chat.models.ChatMessage;
 import com.example.chat.models.MessageType;
@@ -11,6 +12,8 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+
+import java.time.LocalDateTime;
 
 @Component
 public class WebSocketEventListener {
@@ -27,12 +30,16 @@ public class WebSocketEventListener {
     public void handleDisconnect(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String username = (String) headerAccessor.getSessionAttributes().get("username");
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+        String roomId = (String) headerAccessor.getSessionAttributes().get("roomId");
         System.out.println("User disconnected : " + username);
-        var message = ChatMessage.builder()
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+        var message = ChatMessageResponseDto.builder()
                 .type(MessageType.LEAVE)
-                .sender(user)
+                .content(username + " leaved.")
+                .sender(username)
+                .chatroomId(roomId)
+                .sentAt(LocalDateTime.now())
                 .build();
-        messageTemplate.convertAndSend("/topic/chat", message);
+        messageTemplate.convertAndSend("/queue/" + roomId, message);
     }
 }
