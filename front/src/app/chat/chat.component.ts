@@ -61,8 +61,9 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   // action to trigger when a new message is received
   displayReceivedMessageCallback = (message : IMessage) => {
+    console.log(JSON.stringify(message.body))
     this.chatHistory.push(JSON.parse(message.body) as IChatMessage)
-    this.resetTimer()
+    this.resetInactivityTimer()
   }
 
   sendMessage(){
@@ -74,14 +75,15 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.authService.getLoggedUserPrivateRoomId())
     }
     this.messageTextarea.nativeElement.value = ""
-    this.resetTimer()
+    this.resetInactivityTimer()
   }
 
   goToAssignedCustomerRoom(chatroomId : string){
     if(this.assignedCustomer == null) return
     this.chatService.disconnect()
     this.chatService.getHistory$(chatroomId).pipe(take(1)).subscribe({
-      next : (chatRoomHistory) => this.chatHistory = chatRoomHistory.messages
+      next : (chatRoomHistory) => this.chatHistory = chatRoomHistory.messages,
+      error : () => this.chatHistory = []
     })
     this.chatService.connect(this.displayReceivedMessageCallback, chatroomId)
   }
@@ -99,16 +101,17 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
-  startTimer() {
-    // one minute
-    this.timerSubscription = timer(0, 60000).subscribe(
+  startInactivityTimer() {
+    // 5 minute
+    const oneMinute = 60000
+    this.timerSubscription = timer(oneMinute*5, oneMinute*5).subscribe(
       () => this.closeChat()
     )
   }
 
-  resetTimer() {
+  resetInactivityTimer() {
     if (this.timerSubscription) this.timerSubscription.unsubscribe()
-    this.startTimer()
+    this.startInactivityTimer()
   }
 
   closeChat(){

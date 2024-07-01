@@ -10,8 +10,9 @@
     <div *ngIf="assignedCustomer?.username != '' && currentRole == 'ADMIN'">
         You are speaking with {{assignedCustomer?.username}}
     </div>
-    <div style="width: 100%;">
-        <app-message *ngFor="let message of chatHistory" [message]="message"></app-message>
+    <div style="width: 100%;" *ngFor="let message of chatHistory">
+        <app-message *ngIf="message.type == 'CHAT'" [message]="message"></app-message>
+        <app-joining-alert *ngIf="message.type == 'JOIN'"></app-joining-alert>
     </div>
     <div class="newMessageContainer">
         <textarea style="resize:none" placeholder="Écrivez ici votre message" #messageTextarea></textarea>
