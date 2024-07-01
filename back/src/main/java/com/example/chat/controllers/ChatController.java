@@ -95,12 +95,13 @@ public class ChatController {
         // add username and roomId to websocket session
         headerAccessor.getSessionAttributes().put("username", message.getSender());
         headerAccessor.getSessionAttributes().put("roomId", chatRoomId);
-        System.out.println("User connected : " + message.getSender() + " to room: " + chatRoomId);
-        User user = userRepository.findByUsername(message.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+        String sender = message.getSender();
+        System.out.println("User connected : " + sender + " to room: " + chatRoomId);
+        // User user = userRepository.findByUsername(sender).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         return ChatMessageResponseDto.builder()
                 .type(message.getType())
-                .content(message.getSender() + " connected.")
-                .sender(user.getUsername())
+                .content(sender + " connected.")
+                .sender(sender)
                 .chatroomId(chatRoomId)
                 .sentAt(LocalDateTime.now())
                 .build();
