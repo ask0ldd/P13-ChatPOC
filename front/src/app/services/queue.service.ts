@@ -9,19 +9,7 @@ import { shareReplay, switchMap, timer } from 'rxjs';
 })
 export class QueueService {
 
-  /*selectedUser : IUser = {
-    username: "",
-    role: "CUSTOMER",
-    chatroomId: "",
-    id: 0,
-    email: ""
-  }*/
-
   constructor(private httpClient: HttpClient, private authService : AuthService) { }
-
-  /*get$(){
-    return this.httpClient.get<IUser[]>(`api/queue`)
-  }*/
 
   getAutoRefresh$(refreshRate_seconds : number){
     // The timer(0, 60000) creates an observable that emits immediately (0) and then every 60 seconds
@@ -41,12 +29,5 @@ export class QueueService {
   removeSelf$(){
     return this.httpClient.post<IUser[]>('api/queue/remove', {username : this.authService.getLoggedUserName()})
   }
-
-  /*setSelectedUser(user : IUser){
-    this.selectedUser = user
-  }
-
-  getSelectedUser(){
-    return this.selectedUser
-  }*/
+  
 }
