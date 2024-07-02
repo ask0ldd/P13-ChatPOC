@@ -29,7 +29,7 @@ public class WebSocketEventListener {
     @EventListener
     public void handleDisconnect(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String username = (String) headerAccessor.getSessionAttributes().get("username");
+        String username = (String) headerAccessor.getSessionAttributes().get("username"); // !!! needs to be fixed since value not found
         String roomId = (String) headerAccessor.getSessionAttributes().get("roomId");
         System.out.println("User disconnected : " + username);
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));

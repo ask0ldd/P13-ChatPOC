@@ -96,8 +96,8 @@ public class ChatController {
         headerAccessor.getSessionAttributes().put("username", message.getSender());
         headerAccessor.getSessionAttributes().put("roomId", chatRoomId);
         String sender = message.getSender();
+        User user = userRepository.findByUsername(sender).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         System.out.println("User connected : " + sender + " to room: " + chatRoomId);
-        // User user = userRepository.findByUsername(sender).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         return ChatMessageResponseDto.builder()
                 .type(message.getType())
                 .content(sender + " connected.")
