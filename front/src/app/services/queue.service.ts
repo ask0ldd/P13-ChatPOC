@@ -2,24 +2,33 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { IUser } from '../interfaces/IUser';
-import { shareReplay, switchMap, timer } from 'rxjs';
+import { BehaviorSubject, Observable, interval, shareReplay, switchMap, tap, timer } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class QueueService {
 
+  // queue : IUser[] = []
+  private queueSubject = new BehaviorSubject<IUser[]>([]);
+  public queue$ = this.queueSubject.asObservable();
+
   constructor(private httpClient: HttpClient, private authService : AuthService) { }
 
-  getAutoRefresh$(refreshRate_seconds : number){
-    // The timer(0, 60000) creates an observable that emits immediately (0) and then every 60 seconds
-    return timer(0, refreshRate_seconds * 1000).pipe(
-      // The switchMap operator is used to switch to a new observable (the HTTP request) every time the timer emits
-      switchMap(() => this.httpClient.get<IUser[]>(`api/queue`)),
-      // shareReplay(1) operator is used to share the latest emitted value with all subscribers 
-      // ensuring that if multiple components subscribe to this observable, only one HTTP request is made
-      shareReplay(1)
-    )
+  startPolling() {
+    timer(0, 15000) // Poll every 15 seconds
+      .pipe(
+        switchMap(() => this.fetchQueue()),
+        shareReplay(1)
+      ).subscribe({
+        next : queue => this.queueSubject.next(queue),
+        error : error => console.error('Error fetching user queue:', error)
+      })
+  }
+
+  private fetchQueue(): Observable<IUser[]>{
+    console.log("fetch")
+    return this.httpClient.get<IUser[]>(`api/queue`)
   }
 
   removeUser$(username : string){
