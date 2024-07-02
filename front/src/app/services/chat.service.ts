@@ -19,16 +19,7 @@ export class ChatService {
 
   constructor(private httpClient: HttpClient, private authService: AuthService) { }
 
-  /**
-   * Establishes a WebSocket connection to the chat server and sets up a STOMP client.
-   * 
-   * @param {function} callback - A function to be called when a message is received.
-   *                              It takes an IMessage object as its parameter.
-   * @param {string} [privateChatroomId] - Optional. The ID of a private chatroom to join.
-   *                                       If not provided, it defaults to an empty string.
-   * @throws {Error} Throws an error if the connection fails.
-   * */
-  connect(callback : (message : IMessage) => void, privateChatroomId? : string){
+  /*connect(callback : (message : IMessage) => void, privateChatroomId? : string){
     // Creates a new SockJS instance
     this.socket = new SockJS(this.baseChatUrl)
 
@@ -37,20 +28,47 @@ export class ChatService {
 
     // Connect to the WebSocket server
     this.stompClient.connect({}, (info : any) => {
-      // Sends a message indicating the user is joining a private room
-      // this.sendMessage("JOIN", "", this.authService.getLoggedUserPrivateRoomId())
       // Subscribes to the specified room (or general chat if no room ID is provided)
       if(!privateChatroomId) {
         this.subscribe(callback)
       }else{
         if(this.authService.getLoggedUserRole() == "ADMIN") this.sendMessage("JOIN", "An Admin is here to help you.", privateChatroomId)
-          this.subscribe(callback, privateChatroomId)
+        this.subscribe(callback, privateChatroomId)
       }
       console.log('Connected to WebSocket server : ' + info);
     }, (error : string) => {
       // Connection failed
       console.error('Failed to connect to WebSocket server', error);
     });
+  }*/
+
+  connectToPrivateRoom(callback : (message : IMessage) => void, privateChatroomId : string){
+    this.socket = new SockJS(this.baseChatUrl)
+    this.stompClient = Stomp.over(this.socket)
+    this.stompClient.connect({}, 
+      (info : any) => {
+        if(this.authService.getLoggedUserRole() == "ADMIN") this.sendMessage("JOIN", "An Admin is here to help you.", privateChatroomId)
+        this.subscribe(callback, privateChatroomId)
+        console.log('Connected to WebSocket server : ' + info)
+      }, 
+      (error : string) => {
+        // Connection failed
+        console.error('Failed to connect to WebSocket server', error);
+      })
+  }
+
+  connectToPublicRoom(callback : (message : IMessage) => void){
+    this.socket = new SockJS(this.baseChatUrl)
+    this.stompClient = Stomp.over(this.socket)
+    this.stompClient.connect({}, 
+      (info : any) => {
+        this.subscribe(callback)
+        console.log('Connected to WebSocket server : ' + info)
+      }, 
+      (error : string) => {
+        // Connection failed
+        console.error('Failed to connect to WebSocket server', error);
+      })
   }
 
   subscribe(callback : messageCallbackType, chatroomId? : string) {
@@ -66,19 +84,14 @@ export class ChatService {
       // message is sent to the public endpoint by default
       let endpoint = messageType == "CHAT" ? '/ws/chat.sendMessage' : '/ws/chat.addUser'
 
-      // endpoint replaced by a private one if necessary
-      /*if(privateRoomId && messageType == "CHAT") endpoint = '/ws/chat/sendMessage/' + privateRoomId || this.authService.getLoggedUserPrivateRoomId()
-      if(privateRoomId && messageType == "JOIN") endpoint = '/ws/chat/addUser/' + this.authService.getLoggedUserPrivateRoomId()*/
-
       if(messageType == "CHAT") {
-        console.log("***CHAT***")
         // endpoint replaced by a private one if necessary
         if(privateRoomId) endpoint = '/ws/chat/sendMessage/' + privateRoomId
         this.stompClient.send(endpoint, {}, JSON.stringify({ content: message, sender: this.authService.getLoggedUserName(), type : "CHAT" }))
       }
 
       if(messageType == "JOIN") {
-        console.log("***JOIN***")
+        // endpoint replaced by a private one if necessary
         if(privateRoomId) endpoint = '/ws/chat/addUser/' + privateRoomId
         const username = this.authService.getLoggedUserName()
         this.stompClient.send(endpoint, {}, JSON.stringify({ content: username, sender: username, type : "JOIN"}))
