@@ -22,7 +22,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   // !!! should be moved to chat service?
   chatHistory : IChatMessage[] = []
   queue : IUser[] = []
-  private queueSubscription! : Subscription
+  // private queueSubscription! : Subscription
+  private historySubscription! : Subscription
   private timerSubscription!: Subscription
 
   currentRole! : TUserRole
@@ -33,8 +34,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     private chatService : ChatService, 
     private authService : AuthService, 
     private queueService : QueueService,
-    private router : Router
-  ){ }
+    private router : Router)
+  {
+    this.queueService.queue$.subscribe(queue => this.queue = queue)
+  }
 
   ngOnInit(): void {
     console.log(this.authService.getLoggedUserName())
@@ -44,15 +47,12 @@ export class ChatComponent implements OnInit, OnDestroy {
     } 
     else {
       // by default, the user is connected to its own chatroom
-      this.chatService.connect(this.displayReceivedMessageCallback)
+      this.chatService.connectToPublicRoom(this.displayReceivedMessageCallback)
       this.currentRole = this.authService.getLoggedUserRole()
       // if the user is an admin, retrieve the queue and autorefresh it every 
-      if(this.currentRole == "ADMIN") this.queueSubscription = this.queueService.getAutoRefresh$(15).subscribe({
-        next : (customers) =>  this.queue = customers,
-        error : () => this.queue = []
-      })
+      if(this.currentRole == "ADMIN") this.queueService.startPolling()
       // if the user is a customer, retrieve the history of its own chatroom
-      if(this.currentRole == "CUSTOMER") this.chatService.getHistory$(this.authService.loggedUser.chatroomId).pipe(take(1)).subscribe({
+      if(this.currentRole == "CUSTOMER") this.historySubscription = this.chatService.getHistory$(this.authService.loggedUser.chatroomId).pipe(take(1)).subscribe({
         next : (chatRoomHistory) => this.chatHistory = chatRoomHistory.messages,
         error : () => this.chatHistory = []
       })
@@ -61,7 +61,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   // action to trigger when a new message is received
   displayReceivedMessageCallback = (message : IMessage) => {
-    console.log(JSON.stringify(message.body))
+    // console.log(JSON.stringify(message.body))
     this.chatHistory.push(JSON.parse(message.body) as IChatMessage)
     this.resetInactivityTimer()
   }
@@ -78,17 +78,18 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.resetInactivityTimer()
   }
 
-  goToAssignedCustomerRoom(chatroomId : string){
+  moveToAssignedCustomerRoom(chatroomId : string){
     if(this.assignedCustomer == null) return
     this.chatService.disconnect()
     this.chatService.getHistory$(chatroomId).pipe(take(1)).subscribe({
       next : (chatRoomHistory) => this.chatHistory = chatRoomHistory.messages,
       error : () => this.chatHistory = []
     })
-    this.chatService.connect(this.displayReceivedMessageCallback, chatroomId)
+    this.chatService.connectToPrivateRoom(this.displayReceivedMessageCallback, chatroomId)
   }
 
   assignCustomerToAdmin(customerName : string){
+    // is customer in queue
     const customer = this.queue.find(customer => customer.username == customerName)
     if(customer != null) {
       this.assignedCustomer = customer
@@ -97,7 +98,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           this.queue = customers
         }
       }).unsubscribe()
-      this.goToAssignedCustomerRoom(this.assignedCustomer.chatroomId)
+      this.moveToAssignedCustomerRoom(this.assignedCustomer.chatroomId)
     }
   }
 
@@ -120,8 +121,9 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
       this.chatService.disconnect()
-      if(this.queueSubscription) this.queueSubscription.unsubscribe()
+      // if(this.queueSubscription) this.queueSubscription.unsubscribe() // take until
       if(this.timerSubscription) this.timerSubscription.unsubscribe()
+      if(this.historySubscription) this.historySubscription.unsubscribe()
       this.queueService.removeSelf$().pipe(take(1)).subscribe().unsubscribe()
   }
 }
