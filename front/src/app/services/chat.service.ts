@@ -17,7 +17,9 @@ export class ChatService {
   private stompClient! : CompatClient
   private subs : StompSubscription[] = []
 
-  constructor(private httpClient: HttpClient, private authService: AuthService) { }
+  constructor(private httpClient: HttpClient, private authService: AuthService) { 
+    // this.initialize()
+  }
 
   /*connect(callback : (message : IMessage) => void, privateChatroomId? : string){
     // Creates a new SockJS instance
@@ -42,9 +44,16 @@ export class ChatService {
     });
   }*/
 
-  connectToPrivateRoom(callback : (message : IMessage) => void, privateChatroomId : string){
+  initialize(){
     this.socket = new SockJS(this.baseChatUrl)
     this.stompClient = Stomp.over(this.socket)
+  }
+
+  // should always connect to a private chatroom, its own chatroom by default
+  // if no chatroom id is passed : chatroomid from auth service
+  // if a chatroom id is passed, target chatroom
+  connectToPrivateRoom(callback : (message : IMessage) => void, privateChatroomId : string){
+    this.initialize()
     this.stompClient.connect({}, 
       (info : any) => {
         if(this.authService.getLoggedUserRole() == "ADMIN") this.sendMessage("JOIN", "An Admin is here to help you.", privateChatroomId)
@@ -58,8 +67,7 @@ export class ChatService {
   }
 
   connectToPublicRoom(callback : (message : IMessage) => void){
-    this.socket = new SockJS(this.baseChatUrl)
-    this.stompClient = Stomp.over(this.socket)
+    this.initialize()
     this.stompClient.connect({}, 
       (info : any) => {
         this.subscribe(callback)
