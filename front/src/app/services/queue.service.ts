@@ -9,9 +9,9 @@ import { BehaviorSubject, Observable, interval, shareReplay, switchMap, tap, tim
 })
 export class QueueService {
 
-  // queue : IUser[] = []
-  private queueSubject = new BehaviorSubject<IUser[]>([]);
-  public queue$ = this.queueSubject.asObservable();
+  /*private queueSubject = new BehaviorSubject<IUser[]>([]);
+  public queue$ = this.queueSubject.asObservable();*/
+  public queue$ = new BehaviorSubject<IUser[]>([]);
 
   constructor(private httpClient: HttpClient, private authService : AuthService) { }
 
@@ -21,7 +21,7 @@ export class QueueService {
         switchMap(() => this.fetchQueue()),
         shareReplay(1)
       ).subscribe({
-        next : queue => this.queueSubject.next(queue),
+        next : queue => this.queue$.next(queue),
         error : error => console.error('Error fetching user queue:', error)
       })
   }
