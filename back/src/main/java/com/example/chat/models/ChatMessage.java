@@ -29,6 +29,7 @@ public class ChatMessage {
     private MessageType type;
 
     @CreationTimestamp
+    @Column(name = "sent_at", updatable = false)
     private LocalDateTime sentAt;
 
     @ManyToOne

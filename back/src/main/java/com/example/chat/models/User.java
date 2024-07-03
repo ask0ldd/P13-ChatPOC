@@ -43,7 +43,7 @@ public class User {
     private String role;
 
     @CreationTimestamp
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private Date creation;
 
     @UpdateTimestamp
