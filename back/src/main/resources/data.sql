@@ -1,3 +1,3 @@
-INSERT INTO `users` (`username`, `email`, `password`, `role`, `chatroom_id`) VALUES ('guest', 'guest@poc.com', 'guest', 'CUSTOMER', 'guestroom1');
-INSERT INTO `users` (`username`, `email`, `password`, `role`, `chatroom_id`) VALUES ('guest2', 'guest2@poc.com', 'guest2', 'CUSTOMER', 'guestroom2');
-INSERT INTO `users` (`username`, `email`, `password`, `role`, `chatroom_id`) VALUES ('admin', 'admin@poc.com', 'admin', 'ADMIN', 'adminroom1');
+INSERT INTO `users` (`username`, `email`, `password`, `role`, `chatroom_id`, `created_at`, `updated_at`) VALUES ('guest', 'guest@poc.com', 'guest', 'CUSTOMER', 'guestroom1', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+INSERT INTO `users` (`username`, `email`, `password`, `role`, `chatroom_id`, `created_at`, `updated_at`) VALUES ('guest2', 'guest2@poc.com', 'guest2', 'CUSTOMER', 'guestroom2', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
+INSERT INTO `users` (`username`, `email`, `password`, `role`, `chatroom_id`, `created_at`, `updated_at`) VALUES ('admin', 'admin@poc.com', 'admin', 'ADMIN', 'adminroom1', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());
