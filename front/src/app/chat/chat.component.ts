@@ -22,7 +22,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   // !!! should be moved to chat service?
   chatHistory : IChatMessage[] = []
   queue : IUser[] = []
-  // private queueSubscription! : Subscription
   private historySubscription! : Subscription
   private timerSubscription!: Subscription
 
@@ -61,7 +60,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   // action to trigger when a new message is received
   displayReceivedMessageCallback = (message : IMessage) => {
-    // console.log(JSON.stringify(message.body))
     this.chatHistory.push(JSON.parse(message.body) as IChatMessage)
     this.resetInactivityTimer()
   }
@@ -121,7 +119,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
       this.chatService.disconnect()
-      // if(this.queueSubscription) this.queueSubscription.unsubscribe() // take until
       if(this.timerSubscription) this.timerSubscription.unsubscribe()
       if(this.historySubscription) this.historySubscription.unsubscribe()
       this.queueService.removeSelf$().pipe(take(1)).subscribe().unsubscribe()
