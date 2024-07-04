@@ -24,6 +24,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   chatHistory : IChatMessage[] = []
   queue : IUser[] = []
   private historySubscription! : Subscription
+  private queueSubscription! : Subscription
   private timerSubscription!: Subscription
 
   currentRole! : TUserRole
@@ -37,32 +38,31 @@ export class ChatComponent implements OnInit, OnDestroy {
     private chatSessionService : ChatSessionService,
     private router : Router)
   {
-    this.queueService.queue$.subscribe(queue => this.queue = queue)
+    this.queueSubscription = this.queueService.queue$.subscribe(queue => this.queue = queue)
+    this.historySubscription = this.chatSessionService.history$.subscribe(history => this.chatHistory = history)
   }
 
   ngOnInit(): void {
-    // console.log(this.authService.getLoggedUserName())
     // if the user is not logged, go back to login
     if(this.authService.getLoggedUserName() == "") {
       this.router.navigate(['/']) 
     } 
     else {
       // by default, the user is connected to its own chatroom
-      this.chatService.connectToPublicRoom(this.displayReceivedMessageCallback)
+      console.log(this.authService.getLoggedUserPrivateRoomId())
+      this.chatService.connectToChatroom(this.displayReceivedMessageCallback, this.authService.getLoggedUserPrivateRoomId())
       this.currentRole = this.authService.getLoggedUserRole()
-      // if the user is an admin, retrieve the queue and autorefresh it every 
-      if(this.currentRole == "ADMIN") this.queueService.startPolling()
-      // if the user is a customer, retrieve the history of its own chatroom
-      if(this.currentRole == "CUSTOMER") this.historySubscription = this.chatService.getHistory$(this.authService.loggedUser.chatroomId).pipe(take(1)).subscribe({
-        next : (chatRoomHistory) => this.chatHistory = chatRoomHistory.messages,
-        error : () => this.chatHistory = []
-      })
+      // if the user is an admin, retrieve the queue and autorefresh after x secs
+      if(this.currentRole == "ADMIN") {
+        this.queueService.startPolling()
+      }
+     this.chatSessionService.fetchHistory()
     }
   }
 
   // action to trigger when a new message is received
   displayReceivedMessageCallback = (message : IMessage) => {
-    this.chatHistory.push(JSON.parse(message.body) as IChatMessage)
+    this.chatSessionService.pushToHistory(message)
     this.resetInactivityTimer()
   }
 
@@ -81,10 +81,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   moveToAssignedCustomerRoom(chatroomId : string){
     if(this.assignedCustomer == null) return
     this.chatService.disconnect()
-    this.chatService.getHistory$(chatroomId).pipe(take(1)).subscribe({
-      next : (chatRoomHistory) => this.chatHistory = chatRoomHistory.messages,
-      error : () => this.chatHistory = []
-    })
+    this.chatSessionService.fetchHistory()
     this.chatService.connectToPrivateRoom(this.displayReceivedMessageCallback, chatroomId)
   }
 
@@ -93,26 +90,21 @@ export class ChatComponent implements OnInit, OnDestroy {
     const customer = this.queue.find(customer => customer.username == customerName)
     if(customer != null) {
       this.assignedCustomer = customer
-      this.queueService.removeUser$(this.assignedCustomer.username).pipe(take(1)).subscribe({
-        next: (customers) => {
-          this.queue = customers
-        }
-      }).unsubscribe()
+      this.queueService.removeUser(this.assignedCustomer.username)
       this.moveToAssignedCustomerRoom(this.assignedCustomer.chatroomId)
     }
   }
 
-  startInactivityTimer() {
-    // 5 minute
+  startInactivityTimer(minutes : number = 5) {
     const oneMinute = 60000
-    this.timerSubscription = timer(oneMinute*5, oneMinute*5).subscribe(
+    this.timerSubscription = timer(minutes*oneMinute, minutes*oneMinute).subscribe(
       () => this.closeChat()
     )
   }
 
-  resetInactivityTimer() {
+  resetInactivityTimer(minutes : number = 5) {
     if (this.timerSubscription) this.timerSubscription.unsubscribe()
-    this.startInactivityTimer()
+    this.startInactivityTimer(minutes)
   }
 
   closeChat(){
@@ -122,6 +114,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
       this.chatService.disconnect()
       if(this.timerSubscription) this.timerSubscription.unsubscribe()
+      if(this.queueSubscription) this.queueSubscription.unsubscribe()
       if(this.historySubscription) this.historySubscription.unsubscribe()
       this.queueService.removeSelf$().pipe(take(1)).subscribe().unsubscribe()
   }
