@@ -100,7 +100,7 @@ export class ChatService {
     }
   }
 
-  getHistory$(chatroomId : string) : Observable<IChatRoomHistory>{
+  fetchHistory$(chatroomId : string) : Observable<IChatRoomHistory>{
     return this.httpClient.get<IChatRoomHistory>(`api/history/${chatroomId}`)
   }
 
