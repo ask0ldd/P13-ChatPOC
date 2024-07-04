@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { CompatClient, IMessage, Stomp, StompHeaders, StompSubscription, messageCallbackType } from '@stomp/stompjs';
 import * as SockJS from 'sockjs-client';
 import { AuthService } from './auth.service';
@@ -21,38 +21,30 @@ export class ChatService {
     // this.initialize()
   }
 
-  /*connect(callback : (message : IMessage) => void, privateChatroomId? : string){
-    // Creates a new SockJS instance
-    this.socket = new SockJS(this.baseChatUrl)
-
-    // Initializes a STOMP client over the SockJS connection
-    this.stompClient = Stomp.over(this.socket)
-
-    // Connect to the WebSocket server
-    this.stompClient.connect({}, (info : any) => {
-      // Subscribes to the specified room (or general chat if no room ID is provided)
-      if(!privateChatroomId) {
-        this.subscribe(callback)
-      }else{
-        if(this.authService.getLoggedUserRole() == "ADMIN") this.sendMessage("JOIN", "An Admin is here to help you.", privateChatroomId)
-        this.subscribe(callback, privateChatroomId)
-      }
-      console.log('Connected to WebSocket server : ' + info);
-    }, (error : string) => {
-      // Connection failed
-      console.error('Failed to connect to WebSocket server', error);
-    });
-  }*/
-
   initialize(){
     this.socket = new SockJS(this.baseChatUrl)
     this.stompClient = Stomp.over(this.socket)
+  }
+
+  connectToChatroom(callback : (message : IMessage) => void, privateChatroomId : string){
+    if(!this.socket || !this.stompClient) this.initialize()
+    this.stompClient.connect({}, 
+      (info : any) => {
+        if(this.authService.getLoggedUserRole() == "ADMIN") this.sendMessage("JOIN", "An Admin is here to help you.", privateChatroomId)
+        this.subscribe(callback, privateChatroomId)
+        console.log('Connected to WebSocket server : ' + info)
+      }, 
+      (error : string) => {
+        // Connection failed
+        console.error('Failed to connect to WebSocket server', error);
+      })
   }
 
   // should always connect to a private chatroom, its own chatroom by default
   // if no chatroom id is passed : chatroomid from auth service
   // if a chatroom id is passed, target chatroom
   connectToPrivateRoom(callback : (message : IMessage) => void, privateChatroomId : string){
+    //if(!this.socket || !this.stompClient) 
     this.initialize()
     this.stompClient.connect({}, 
       (info : any) => {
@@ -67,6 +59,7 @@ export class ChatService {
   }
 
   connectToPublicRoom(callback : (message : IMessage) => void){
+    // if(!this.socket || !this.stompClient) 
     this.initialize()
     this.stompClient.connect({}, 
       (info : any) => {
