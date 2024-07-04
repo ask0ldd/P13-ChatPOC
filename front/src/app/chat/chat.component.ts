@@ -8,6 +8,7 @@ import { QueueService } from '../services/queue.service';
 import { Subscription, take, timer } from 'rxjs';
 import { IUser } from '../interfaces/IUser';
 import { TUserRole } from '../types/TUserRole';
+import { ChatSessionService } from '../services/chat-session.service';
 
 @Component({
   selector: 'app-chat',
@@ -33,13 +34,14 @@ export class ChatComponent implements OnInit, OnDestroy {
     private chatService : ChatService, 
     private authService : AuthService, 
     private queueService : QueueService,
+    private chatSessionService : ChatSessionService,
     private router : Router)
   {
     this.queueService.queue$.subscribe(queue => this.queue = queue)
   }
 
   ngOnInit(): void {
-    console.log(this.authService.getLoggedUserName())
+    // console.log(this.authService.getLoggedUserName())
     // if the user is not logged, go back to login
     if(this.authService.getLoggedUserName() == "") {
       this.router.navigate(['/']) 
