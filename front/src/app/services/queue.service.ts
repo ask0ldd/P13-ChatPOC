@@ -27,12 +27,14 @@ export class QueueService {
   }
 
   private fetchQueue(): Observable<IUser[]>{
-    console.log("fetch")
     return this.httpClient.get<IUser[]>(`api/queue`)
   }
 
-  removeUser$(username : string){
-    return this.httpClient.post<IUser[]>('api/queue/remove', {username : username})
+  removeUser(username : string){
+    this.httpClient.post<IUser[]>('api/queue/remove', {username : username}).subscribe({
+      next: (customers) => this.queue$.next(customers),
+      error: () => console.log("can't retrieve the queue.")
+    })
   }
 
   removeSelf$(){
