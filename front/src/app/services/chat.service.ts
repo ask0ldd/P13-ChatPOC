@@ -17,15 +17,28 @@ export class ChatService {
   private stompClient! : CompatClient
   private subs : StompSubscription[] = []
 
-  constructor(private httpClient: HttpClient, private authService: AuthService) { 
-    // this.initialize()
-  }
+  /**
+   * @constructor
+   * @param {HttpClient} httpClient - HTTP client for making API requests.
+   * @param {AuthService} authService - Authentication service for user information.
+   */
+  constructor(private httpClient: HttpClient, private authService: AuthService) { }
 
+  /**
+   * @method initialize
+   * @description Initializes the WebSocket connection and STOMP client.
+   */
   initialize(){
     this.socket = new SockJS(this.baseChatUrl)
     this.stompClient = Stomp.over(this.socket)
   }
 
+  /**
+   * @method connectToChatroom
+   * @description Connects to a specific chatroom.
+   * @param {function} callback - Callback function to handle incoming messages.
+   * @param {string} privateChatroomId - ID of the private chatroom to connect to.
+   */
   connectToChatroom(callback : (message : IMessage) => void, privateChatroomId : string){
     this.initialize()
     this.stompClient.connect({}, 
@@ -40,38 +53,12 @@ export class ChatService {
       })
   }
 
-  // should always connect to a private chatroom, its own chatroom by default
-  // if no chatroom id is passed : chatroomid from auth service
-  // if a chatroom id is passed, target chatroom
-  /*connectToPrivateRoom(callback : (message : IMessage) => void, privateChatroomId : string){
-    //if(!this.socket || !this.stompClient) 
-    this.initialize()
-    this.stompClient.connect({}, 
-      (info : any) => {
-        if(this.authService.getLoggedUserRole() == "ADMIN") this.sendMessage("JOIN", "An Admin is here to help you.", privateChatroomId)
-        this.subscribe(callback, privateChatroomId)
-        console.log('Connected to WebSocket server : ' + info)
-      }, 
-      (error : string) => {
-        // Connection failed
-        console.error('Failed to connect to WebSocket server', error);
-      })
-  }
-
-  connectToPublicRoom(callback : (message : IMessage) => void){
-    // if(!this.socket || !this.stompClient) 
-    this.initialize()
-    this.stompClient.connect({}, 
-      (info : any) => {
-        this.subscribe(callback)
-        console.log('Connected to WebSocket server : ' + info)
-      }, 
-      (error : string) => {
-        // Connection failed
-        console.error('Failed to connect to WebSocket server', error);
-      })
-  }*/
-
+  /**
+   * @method subscribe
+   * @description Subscribes to a chatroom.
+   * @param {function} callback - Callback function to handle incoming messages.
+   * @param {string} chatroomId - ID of the chatroom to subscribe to.
+   */
   subscribe(callback : messageCallbackType, chatroomId : string) {
     if (this.stompClient) {
       const privateRoom = chatroomId == null ? '/queue/' + this.authService.getLoggedUserPrivateRoomId() : '/queue/' + chatroomId
@@ -80,6 +67,13 @@ export class ChatService {
     }
   }
 
+  /**
+   * @method sendMessage
+   * @description Sends a message to a chatroom.
+   * @param {TMessageType} messageType - Type of the message (CHAT or JOIN).
+   * @param {string} message - Content of the message.
+   * @param {string} privateRoomId - ID of the private room to send the message to.
+   */
   sendMessage(messageType : TMessageType, message : string, privateRoomId : string){ 
     if (this.stompClient) {
       // message is sent to the public endpoint by default
@@ -100,10 +94,20 @@ export class ChatService {
     }
   }
 
+  /**
+   * @method fetchHistory$
+   * @description Fetches the chat history for a specific chatroom.
+   * @param {string} chatroomId - ID of the chatroom to fetch history for.
+   * @returns {Observable<IChatRoomHistory>} Observable of the chat room history.
+   */
   fetchHistory$(chatroomId : string) : Observable<IChatRoomHistory>{
     return this.httpClient.get<IChatRoomHistory>(`api/history/${chatroomId}`)
   }
 
+  /**
+   * @method disconnect
+   * @description Disconnects from all subscriptions and the STOMP client.
+   */
   disconnect() {
     if (this.stompClient) {
       if(this.subs.length > 0) this.subs.forEach(sub => sub.unsubscribe())
