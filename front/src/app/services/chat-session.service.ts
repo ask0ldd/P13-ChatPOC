@@ -12,7 +12,7 @@ export class ChatSessionService {
 
   activeChatroomId!: string
   history : IChatMessage[] = []
-  public history$ = new BehaviorSubject<IChatMessage[]>([])
+  public inMemoryHistory$ = new BehaviorSubject<IChatMessage[]>([])
   historySub! : Subscription
 
   constructor(private authService : AuthService, private chatService : ChatService) {
@@ -25,7 +25,7 @@ export class ChatSessionService {
     this.historySub = this.chatService.fetchHistory$(this.activeChatroomId).pipe(take(1)).subscribe({
       next : (history) => {
         this.history = history.messages
-        this.history$.next(this.history)
+        this.inMemoryHistory$.next(this.history)
       },
       error : () => this.history = []
     })
@@ -41,17 +41,20 @@ export class ChatSessionService {
 
   pushToHistory(stompMessage : IMessage){
     this.history.push(JSON.parse(stompMessage.body) as IChatMessage)
-    this.history$.next(this.history)
+    this.inMemoryHistory$.next(this.history)
   }
 
   setHistory(messages : IChatMessage[]){
     this.history = messages
-    this.history$.next(this.history)
+    this.inMemoryHistory$.next(this.history)
   }
 
   fetchHistory() {
-    this.chatService.fetchHistory$(this.authService.loggedUser.chatroomId).pipe(take(1)).subscribe({
-      next : (chatRoomHistory) => this.setHistory(chatRoomHistory.messages),
+    this.chatService.fetchHistory$(this.activeChatroomId || this.authService.loggedUser.chatroomId).pipe(take(1)).subscribe({
+      next : (chatRoomHistory) => {
+          this.setHistory(chatRoomHistory.messages)
+          this.inMemoryHistory$.next(this.history)
+      },
       error : () => this.setHistory([])
     })
   }

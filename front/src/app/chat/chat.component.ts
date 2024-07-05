@@ -20,16 +20,15 @@ export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('messageTextarea')
   messageTextarea!: ElementRef;
 
-  // !!! should be moved to chat service?
   chatHistory : IChatMessage[] = []
   queue : IUser[] = []
-  private historySubscription! : Subscription
+  private inMemoryHistorySubscription! : Subscription
   private queueSubscription! : Subscription
   private timerSubscription!: Subscription
 
   currentRole! : TUserRole
 
-  assignedCustomer : IUser | null = null
+  assignedCustomer : IUser | null = null // move to queue?
 
   constructor(
     private chatService : ChatService, 
@@ -39,7 +38,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private router : Router)
   {
     this.queueSubscription = this.queueService.queue$.subscribe(queue => this.queue = queue)
-    this.historySubscription = this.chatSessionService.history$.subscribe(history => this.chatHistory = history)
+    this.inMemoryHistorySubscription = this.chatSessionService.inMemoryHistory$.subscribe(history => this.chatHistory = history)
   }
 
   ngOnInit(): void {
@@ -48,15 +47,15 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.router.navigate(['/']) 
     } 
     else {
-      // by default, the user is connected to its own chatroom
-      console.log(this.authService.getLoggedUserPrivateRoomId())
+      // by default, the user is connected to its own private chatroom
       this.chatService.connectToChatroom(this.displayReceivedMessageCallback, this.authService.getLoggedUserPrivateRoomId())
       this.currentRole = this.authService.getLoggedUserRole()
-      // if the user is an admin, retrieve the queue and autorefresh after x secs
+      // if the user is an admin, retrieve the queue and autorefresh it every x secs
       if(this.currentRole == "ADMIN") {
         this.queueService.startPolling()
       }
-     this.chatSessionService.fetchHistory()
+      // retrieve the history for the current chatroom
+      this.chatSessionService.fetchHistory()
     }
   }
 
@@ -67,11 +66,11 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   sendMessage(){
-    // if admin, can only send a message if a customer has been previously selected
-    if(this.currentRole == "ADMIN") {
-      if(this.assignedCustomer?.chatroomId != "") this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.assignedCustomer?.chatroomId)
+    // if the user is an admin with a customer assigned, send the message to this customer's room
+    if(this.currentRole == "ADMIN" && this.assignedCustomer?.chatroomId != "") {
+      this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.assignedCustomer?.chatroomId)
     } else {
-      // if customer, send a message to his own room
+      // in all the other cases, send the message to the connected user's private room
       this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.authService.getLoggedUserPrivateRoomId())
     }
     this.messageTextarea.nativeElement.value = ""
@@ -81,12 +80,13 @@ export class ChatComponent implements OnInit, OnDestroy {
   moveToAssignedCustomerRoom(chatroomId : string){
     if(this.assignedCustomer == null) return
     this.chatService.disconnect()
+    this.chatSessionService.setActiveChatroom(chatroomId)
+    this.chatService.connectToChatroom(this.displayReceivedMessageCallback, chatroomId)
     this.chatSessionService.fetchHistory()
-    this.chatService.connectToPrivateRoom(this.displayReceivedMessageCallback, chatroomId)
   }
 
   assignCustomerToAdmin(customerName : string){
-    // is customer in queue
+    // is customer still in queue
     const customer = this.queue.find(customer => customer.username == customerName)
     if(customer != null) {
       this.assignedCustomer = customer
@@ -115,7 +115,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.chatService.disconnect()
       if(this.timerSubscription) this.timerSubscription.unsubscribe()
       if(this.queueSubscription) this.queueSubscription.unsubscribe()
-      if(this.historySubscription) this.historySubscription.unsubscribe()
+      if(this.inMemoryHistorySubscription) this.inMemoryHistorySubscription.unsubscribe()
       this.queueService.removeSelf$().pipe(take(1)).subscribe().unsubscribe()
   }
 }

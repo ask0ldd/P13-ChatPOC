@@ -27,7 +27,7 @@ export class ChatService {
   }
 
   connectToChatroom(callback : (message : IMessage) => void, privateChatroomId : string){
-    if(!this.socket || !this.stompClient) this.initialize()
+    this.initialize()
     this.stompClient.connect({}, 
       (info : any) => {
         if(this.authService.getLoggedUserRole() == "ADMIN") this.sendMessage("JOIN", "An Admin is here to help you.", privateChatroomId)
@@ -43,7 +43,7 @@ export class ChatService {
   // should always connect to a private chatroom, its own chatroom by default
   // if no chatroom id is passed : chatroomid from auth service
   // if a chatroom id is passed, target chatroom
-  connectToPrivateRoom(callback : (message : IMessage) => void, privateChatroomId : string){
+  /*connectToPrivateRoom(callback : (message : IMessage) => void, privateChatroomId : string){
     //if(!this.socket || !this.stompClient) 
     this.initialize()
     this.stompClient.connect({}, 
@@ -70,7 +70,7 @@ export class ChatService {
         // Connection failed
         console.error('Failed to connect to WebSocket server', error);
       })
-  }
+  }*/
 
   subscribe(callback : messageCallbackType, chatroomId? : string) {
     if (this.stompClient) {
