@@ -72,7 +72,7 @@ export class ChatService {
       })
   }*/
 
-  subscribe(callback : messageCallbackType, chatroomId? : string) {
+  subscribe(callback : messageCallbackType, chatroomId : string) {
     if (this.stompClient) {
       const privateRoom = chatroomId == null ? '/queue/' + this.authService.getLoggedUserPrivateRoomId() : '/queue/' + chatroomId
       const sub = this.stompClient.subscribe(privateRoom, callback);
@@ -80,7 +80,7 @@ export class ChatService {
     }
   }
 
-  sendMessage(messageType : TMessageType, message : string, privateRoomId? : string){ 
+  sendMessage(messageType : TMessageType, message : string, privateRoomId : string){ 
     if (this.stompClient) {
       // message is sent to the public endpoint by default
       let endpoint = messageType == "CHAT" ? '/ws/chat.sendMessage' : '/ws/chat.addUser'

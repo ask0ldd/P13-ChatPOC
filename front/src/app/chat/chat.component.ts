@@ -67,8 +67,8 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   sendMessage(){
     // if the user is an admin with a customer assigned, send the message to this customer's room
-    if(this.currentRole == "ADMIN" && this.assignedCustomer?.chatroomId != "") {
-      this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.assignedCustomer?.chatroomId)
+    if(this.currentRole == "ADMIN" && this.assignedCustomer?.chatroomId != null) {
+      this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.assignedCustomer.chatroomId)
     } else {
       // in all the other cases, send the message to the connected user's private room
       this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.authService.getLoggedUserPrivateRoomId())
