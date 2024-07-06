@@ -13,9 +13,9 @@ export class ChatSessionService {
   activeChatroomId!: string
   inMemoryHistory : IChatMessage[] = []
   public inMemoryHistory$ = new BehaviorSubject<IChatMessage[]>([])
-  historySub! : Subscription
+  fetchHistorySub! : Subscription
 
-    /**
+  /**
    * @constructor
    * @param {AuthService} authService - Service for authentication-related operations.
    * @param {ChatService} chatService - Service for chat-related operations.
@@ -30,9 +30,9 @@ export class ChatSessionService {
    * @param {string} chatroomId - The ID of the chatroom to set as active.
    */
   setActiveChatroom(chatroomId : string){
-    if(this.historySub) this.historySub.unsubscribe()
+    if(this.fetchHistorySub) this.fetchHistorySub.unsubscribe()
     this.activeChatroomId = chatroomId
-    this.historySub = this.chatService.fetchHistory$(this.activeChatroomId).pipe(take(1)).subscribe({
+    this.fetchHistorySub = this.chatService.fetchHistory$(this.activeChatroomId).pipe(take(1)).subscribe({
       next : (history) => {
         this.inMemoryHistory = history.messages
         this.inMemoryHistory$.next(this.inMemoryHistory)
