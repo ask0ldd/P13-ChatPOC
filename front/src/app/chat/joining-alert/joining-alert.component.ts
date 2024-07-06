@@ -5,6 +5,4 @@ import { Component } from '@angular/core';
   templateUrl: './joining-alert.component.html',
   styleUrls: ['./joining-alert.component.css']
 })
-export class JoiningAlertComponent {
-
-}
+export class JoiningAlertComponent { }
