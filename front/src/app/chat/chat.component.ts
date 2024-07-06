@@ -59,24 +59,36 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
-  // action to trigger when a new message is received
+  /**
+   * Callback function to handle received messages.
+   * Adds the message to the chat history and resets the inactivity timer.
+   * @param message - The received message object.
+   */
   displayReceivedMessageCallback = (message : IMessage) => {
     this.chatSessionService.pushToHistory(message)
     this.resetInactivityTimer()
   }
 
+  /**
+   * Sends a message to the appropriate chatroom based on the user's role and assigned customer.
+   */
   sendMessage(){
-    // if the user is an admin with a customer assigned, send the message to this customer's room
-    if(this.currentRole == "ADMIN" && this.assignedCustomer?.chatroomId != null) {
+    // if the user is an admin with a customer assigned, send the message to the assigned customer's room
+    if(this.currentRole == "ADMIN" && this.assignedCustomer != null) {
       this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.assignedCustomer.chatroomId)
     } else {
-      // in all the other cases, send the message to the connected user's private room
+      // in all the other cases, send the message to the logged user's room
       this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.authService.getLoggedUserPrivateRoomId())
     }
     this.messageTextarea.nativeElement.value = ""
     this.resetInactivityTimer()
   }
 
+  /**
+   * Moves the chat to the assigned customer's room.
+   * Disconnects from the current room, connects to the new room, and fetches the chat history.
+   * @param chatroomId - The ID of the chatroom to move to.
+   */
   moveToAssignedCustomerRoom(chatroomId : string){
     if(this.assignedCustomer == null) return
     this.chatService.disconnect()
@@ -85,6 +97,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.chatSessionService.fetchHistory()
   }
 
+  /**
+   * Assigns a customer to an admin and moves to the customer's chatroom.
+   * @param customerName - The name of the customer to assign.
+   */
   assignCustomerToAdmin(customerName : string){
     // is customer still in queue
     const customer = this.queue.find(customer => customer.username == customerName)
@@ -95,6 +111,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Starts the inactivity timer.
+   * @param minutes - The number of minutes before the chat is closed due to inactivity. Default is 5 minutes.
+   */
   startInactivityTimer(minutes : number = 5) {
     const oneMinute = 60000
     this.timerSubscription = timer(minutes*oneMinute, minutes*oneMinute).subscribe(
@@ -102,11 +122,18 @@ export class ChatComponent implements OnInit, OnDestroy {
     )
   }
 
+  /**
+   * Resets the inactivity timer.
+   * @param minutes - The number of minutes to reset the timer to. Default is 5 minutes.
+   */
   resetInactivityTimer(minutes : number = 5) {
     if (this.timerSubscription) this.timerSubscription.unsubscribe()
     this.startInactivityTimer(minutes)
   }
 
+  /**
+   * Closes the chat session.
+   */
   closeChat(){
     console.log("closing chat...")
   }
