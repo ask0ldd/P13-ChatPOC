@@ -9,8 +9,6 @@ import { BehaviorSubject, Observable, interval, shareReplay, switchMap, tap, tim
 })
 export class QueueService {
 
-  /*private queueSubject = new BehaviorSubject<IUser[]>([]);
-  public queue$ = this.queueSubject.asObservable();*/
   public queue$ = new BehaviorSubject<IUser[]>([]);
 
   /**
@@ -33,7 +31,7 @@ export class QueueService {
         shareReplay(1)
       ).subscribe({
         next : queue => this.queue$.next(queue),
-        error : error => console.error('Error fetching user queue:', error)
+        error : error => console.error('Error fetching the users queue :', error)
       })
   }
 
@@ -57,7 +55,7 @@ export class QueueService {
   removeUser(username : string) : void{
     this.httpClient.post<IUser[]>('api/queue/remove', {username : username}).subscribe({
       next: (customers) => this.queue$.next(customers),
-      error: () => console.log("can't retrieve the queue.")
+      error: () => console.log("Can't retrieve the queue.")
     })
   }
 
