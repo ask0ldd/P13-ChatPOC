@@ -10,10 +10,10 @@ import { IMessage } from '@stomp/stompjs';
 })
 export class ChatSessionService {
 
-  activeChatroomId!: string
-  inMemoryHistory : IChatMessage[] = []
+  private activeChatroomId!: string
+  private inMemoryHistory : IChatMessage[] = []
   public inMemoryHistory$ = new BehaviorSubject<IChatMessage[]>([])
-  fetchHistorySub! : Subscription
+  private fetchHistorySub! : Subscription
 
   /**
    * @constructor
