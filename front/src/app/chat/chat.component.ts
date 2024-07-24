@@ -9,6 +9,7 @@ import { Subscription, take, timer } from 'rxjs';
 import { IUser } from '../interfaces/IUser';
 import { TUserRole } from '../types/TUserRole';
 import { ChatSessionService } from '../services/chat-session.service';
+import { AssistedCustomersService } from '../services/assisted-customers.service';
 
 @Component({
   selector: 'app-chat',
@@ -35,6 +36,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private authService : AuthService, 
     private queueService : QueueService,
     private chatSessionService : ChatSessionService,
+    private assistedCustomersService : AssistedCustomersService,
     private router : Router)
   {
     this.queueSubscription = this.queueService.queue$.subscribe(queue => this.queue = queue)
@@ -108,6 +110,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.assignedCustomer = customer
       this.queueService.removeUser(this.assignedCustomer.username)
       this.moveToAssignedCustomerRoom(this.assignedCustomer.chatroomId)
+      this.assistedCustomersService.addToList(customer)
     }
   }
 
