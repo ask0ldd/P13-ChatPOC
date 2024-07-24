@@ -9,6 +9,7 @@ import { MessageComponent } from './chat/message/message.component';
 import { AppRoutingModule } from './app-routing.module';
 import { DateFormatPipe } from './pipes/date-format.pipe';
 import { JoiningAlertComponent } from './chat/joining-alert/joining-alert.component';
+import { AssistedCustomersListComponent } from './chat/assisted-customers-list/assisted-customers-list.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { JoiningAlertComponent } from './chat/joining-alert/joining-alert.compon
     MessageComponent,
     DateFormatPipe,
     JoiningAlertComponent,
+    AssistedCustomersListComponent,
   ],
   imports: [
     BrowserModule,
