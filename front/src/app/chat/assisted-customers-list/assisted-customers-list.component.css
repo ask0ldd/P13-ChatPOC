@@ -1,0 +1,23 @@
+div.assistedCustomersContainer {
+  display: flex;
+  flex-direction: row;
+  column-gap: 1rem;
+  width: 100%;
+  padding: 1rem 0.5rem;
+}
+
+div.assistedCustomersContainer div {
+  height: 3rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px #2292ee22;
+  font-weight: 600;
+  column-gap: 1.5rem;
+  overflow: hidden;
+}
