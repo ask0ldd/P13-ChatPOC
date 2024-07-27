@@ -1,9 +1,10 @@
+import { StompSubscription } from "@stomp/stompjs"
 import { IChatMessage } from "./IChatMessage"
-import { IUser } from "./IUser"
 
 export interface IChatConversation{
-    id : number
-    name : string
-    owner : IUser
+    chatroomId : number
+    // name : string
+    owner : string // IUser
     messages : IChatMessage[]
+    sub : StompSubscription[]
 }
