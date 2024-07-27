@@ -17,6 +17,12 @@ export class ChatService {
   private stompClient! : CompatClient
   private subs : StompSubscription[] = []
 
+  // assisted customers
+  // conversations
+  // private activeRoom : string
+  // private openedRooms : string[]
+
+
   /**
    * @constructor
    * @param {HttpClient} httpClient - HTTP client for making API requests.
