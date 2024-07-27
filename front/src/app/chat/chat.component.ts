@@ -50,7 +50,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     } 
     else {
       // by default, the user is connected to its own private chatroom
-      this.chatService.connectToChatroom(this.displayReceivedMessageCallback, this.authService.getLoggedUserPrivateRoomId())
+      // this.chatService.connectToChatroom(this.displayReceivedMessageCallback, this.authService.getLoggedUserPrivateRoomId())
+      this.chatService.initChatClient(this.displayReceivedMessageCallback, this.authService.getLoggedUserPrivateRoomId())
       this.currentRole = this.authService.getLoggedUserRole()
       // if the user is an admin, retrieve the queue and autorefresh it every x secs
       if(this.currentRole == "ADMIN") {

@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { IChatRoomHistory } from '../interfaces/IChatRoomHistory';
 import { Observable } from 'rxjs';
 import { TMessageType } from '../types/TMessageType';
+import { IChatConversation } from '../interfaces/IChatConversation';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,8 @@ export class ChatService {
   private socket! : WebSocket
   private stompClient! : CompatClient
   private subs : StompSubscription[] = []
+
+  // private conversations : IChatConversation = []
 
   // assisted customers
   // conversations
@@ -28,35 +31,40 @@ export class ChatService {
    * @param {HttpClient} httpClient - HTTP client for making API requests.
    * @param {AuthService} authService - Authentication service for user information.
    */
-  constructor(private httpClient: HttpClient, private authService: AuthService) { }
+  constructor(private httpClient: HttpClient, private authService: AuthService) { 
+    // this.initializeClient()
+  }
 
-  /**
-   * @method initialize
-   * @description Initializes the WebSocket connection and STOMP client.
-   */
-  initialize(){
+  initChatClient(callback : (message : IMessage) => void, privateChatroomId : string){
     this.socket = new SockJS(this.baseChatUrl)
     this.stompClient = Stomp.over(this.socket)
+
+    this.stompClient.onConnect = (frame) => {
+      console.log('Connected: ' + frame)
+      this.subscribe(callback, privateChatroomId)
+    }
+
+    this.stompClient.onStompError = (frame) => {
+      console.error('Broker reported error: ' + frame.headers['message'])
+      console.error('Additional details: ' + frame.body)
+    }
+
+    this.stompClient.activate()
   }
 
   /**
+   * OBSOLETE ?!!!
    * @method connectToChatroom
    * @description Connects to a specific chatroom.
    * @param {function} callback - Callback function to handle incoming messages.
    * @param {string} privateChatroomId - ID of the private chatroom to connect to.
    */
   connectToChatroom(callback : (message : IMessage) => void, privateChatroomId : string){
-    this.initialize()
-    this.stompClient.connect({}, 
-      (info : any) => {
-        if(this.authService.getLoggedUserRole() == "ADMIN") this.sendMessage("JOIN", "An Admin is here to help you.", privateChatroomId)
+      if (this.stompClient) {
         this.subscribe(callback, privateChatroomId)
-        console.log('Connected to WebSocket server : ' + info)
-      }, 
-      (error : string) => {
-        // Connection failed
-        console.error('Failed to connect to WebSocket server', error);
-      })
+      } else {
+        console.error("StompClient should be initialized first.")
+      }
   }
 
   /**
@@ -65,11 +73,12 @@ export class ChatService {
    * @param {function} callback - Callback function to handle incoming messages.
    * @param {string} chatroomId - ID of the chatroom to subscribe to.
    */
-  subscribe(callback : messageCallbackType, chatroomId : string) {
+  subscribe(callback : messageCallbackType, chatroomId : string) : StompSubscription | void {
     if (this.stompClient) {
       const privateRoom = chatroomId == null ? '/queue/' + this.authService.getLoggedUserPrivateRoomId() : '/queue/' + chatroomId
       const sub = this.stompClient.subscribe(privateRoom, callback);
       this.subs.push(sub)
+      return sub
     }
   }
 
@@ -97,6 +106,8 @@ export class ChatService {
         const username = this.authService.getLoggedUserName()
         this.stompClient.send(endpoint, {}, JSON.stringify({ content: username, sender: username, type : "JOIN"}))
       }
+    } else {
+      console.error("StompClient should be initialized first.")
     }
   }
 
