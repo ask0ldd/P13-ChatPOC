@@ -8,6 +8,7 @@ import { Observable, of } from 'rxjs';
 export class AssistedCustomersService {
 
   private assistedCustomers : Array<IUser> = []
+  // private activeCustomer : IUser | null = null
 
   constructor() { }
 
@@ -22,4 +23,12 @@ export class AssistedCustomersService {
   removeFromList(customer : IUser){
     this.assistedCustomers = this.assistedCustomers.filter(assistedCustomer => !(assistedCustomer == customer))
   }
+
+  /*setActiveCustomer(customer : IUser){
+    this.activeCustomer = customer
+  }
+
+  getActiveCustomer() : IUser | null{
+    return this.activeCustomer
+  }*/
 }
