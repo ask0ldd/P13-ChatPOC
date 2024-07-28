@@ -24,11 +24,4 @@ export class AssistedCustomersService {
     this.assistedCustomers = this.assistedCustomers.filter(assistedCustomer => !(assistedCustomer == customer))
   }
 
-  /*setActiveCustomer(customer : IUser){
-    this.activeCustomer = customer
-  }
-
-  getActiveCustomer() : IUser | null{
-    return this.activeCustomer
-  }*/
 }
