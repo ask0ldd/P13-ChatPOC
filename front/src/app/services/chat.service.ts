@@ -7,6 +7,7 @@ import { IChatRoomHistory } from '../interfaces/IChatRoomHistory';
 import { Observable } from 'rxjs';
 import { TMessageType } from '../types/TMessageType';
 import { IChatConversation } from '../interfaces/IChatConversation';
+import { IUser } from '../interfaces/IUser';
 
 @Injectable({
   providedIn: 'root'
@@ -50,6 +51,15 @@ export class ChatService {
     }
 
     this.stompClient.activate()
+  }
+
+  initNewConversation(callback : (message : IMessage) => void, customer : IUser){
+    if (this.stompClient) {
+      const sub = this.subscribe(callback, customer.chatroomId)
+      if(sub != null) this.subs.push(sub)
+    } else {
+      console.error("StompClient should be initialized first.")
+    }
   }
 
   /**
