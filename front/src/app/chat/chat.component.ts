@@ -10,6 +10,7 @@ import { IUser } from '../interfaces/IUser';
 import { TUserRole } from '../types/TUserRole';
 import { ChatSessionService } from '../services/chat-session.service';
 import { AssistedCustomersService } from '../services/assisted-customers.service';
+import { ChatNotificationsService } from '../services/chat-notifications.service';
 
 @Component({
   selector: 'app-chat',
@@ -29,7 +30,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   currentRole! : TUserRole
 
-  assignedCustomer : IUser | null = null // move to queue?
+  activeCustomer : IUser | null = null
 
   constructor(
     private chatService : ChatService, 
@@ -37,6 +38,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private queueService : QueueService,
     private chatSessionService : ChatSessionService,
     private assistedCustomersService : AssistedCustomersService,
+    private chatNotificationsService : ChatNotificationsService,
     private router : Router)
   {
     this.queueSubscription = this.queueService.queue$.subscribe(queue => this.queue = queue)
@@ -51,7 +53,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     else {
       // by default, the user is connected to its own private chatroom
       // this.chatService.connectToChatroom(this.displayReceivedMessageCallback, this.authService.getLoggedUserPrivateRoomId())
-      this.chatService.initChatClient(this.displayReceivedMessageCallback, this.authService.getLoggedUserPrivateRoomId())
+      this.chatService.initChatClient(this.receivedMessageCallback, this.authService.getLoggedUserPrivateRoomId())
       this.currentRole = this.authService.getLoggedUserRole()
       // if the user is an admin, retrieve the queue and autorefresh it every x secs
       if(this.currentRole == "ADMIN") {
@@ -67,8 +69,9 @@ export class ChatComponent implements OnInit, OnDestroy {
    * Adds the message to the chat history and resets the inactivity timer.
    * @param message - The received message object.
    */
-  displayReceivedMessageCallback = (message : IMessage) => {
+  receivedMessageCallback = (message : IMessage) => {
     this.chatSessionService.pushToHistory(message)
+    // if(this.authService.getLoggedUserRole() == "ADMIN") this.chatNotificationsService.pushNotification(this.authService.getLoggedUserPrivateRoomId())
     this.resetInactivityTimer()
   }
 
@@ -77,8 +80,8 @@ export class ChatComponent implements OnInit, OnDestroy {
    */
   sendMessage(){
     // if the user is an admin with a customer assigned, send the message to the assigned customer's room
-    if(this.currentRole == "ADMIN" && this.assignedCustomer != null) {
-      this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.assignedCustomer.chatroomId)
+    if(this.currentRole == "ADMIN" && this.activeCustomer != null) {
+      this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.activeCustomer.chatroomId)
     } else {
       // in all the other cases, send the message to the logged user's room
       this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.authService.getLoggedUserPrivateRoomId())
@@ -87,11 +90,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.resetInactivityTimer()
   }
 
-  /**
-   * Moves the chat to the assigned customer's room.
-   * Disconnects from the current room, connects to the new room, and fetches the chat history.
-   * @param chatroomId - The ID of the chatroom to move to.
-   */
+
+  /*
   moveToAssignedCustomerRoom(chatroomId : string){
     if(this.assignedCustomer == null) return
     this.chatService.disconnect()
@@ -100,10 +100,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.chatSessionService.fetchHistory()
   }
 
-  /**
-   * Assigns a customer to an admin and moves to the customer's chatroom.
-   * @param customerName - The name of the customer to assign.
-   */
   assignCustomerToAdmin(customerName : string){
     // is customer still in queue
     const customer = this.queue.find(customer => customer.username == customerName)
@@ -112,6 +108,17 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.queueService.removeUser(this.assignedCustomer.username)
       this.moveToAssignedCustomerRoom(this.assignedCustomer.chatroomId)
       this.assistedCustomersService.addToList(customer)
+    }
+  }*/
+
+  assignCustomerToAdmin(customerName : string){
+    const customer = this.queue.find(customer => customer.username == customerName)
+    if(customer != null){
+      this.activeCustomer = customer
+      this.assistedCustomersService.addToList(customer)
+      // this.assistedCustomersService.setActiveCustomer(customer)
+      this.queueService.removeUser(customer.username)
+      this.chatService.initNewConversation(this.receivedMessageCallback, customer)
     }
   }
 
