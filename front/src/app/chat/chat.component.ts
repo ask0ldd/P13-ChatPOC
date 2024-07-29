@@ -131,9 +131,11 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   
   switchConversation(customer : IUser){
+    console.log("switchConvCustomer : " + JSON.stringify(customer))
     this.activeCustomer = customer
     this.activeRoomId = customer.chatroomId
     if(this.conversationSubscription) this.conversationSubscription.unsubscribe()
+    console.log("roomId : " + this.activeRoomId)
     this.conversationSubscription = this.chatService.fetchHistory$(this.activeRoomId).pipe(take(1)).subscribe({
       next : (chatRoomHistory) => this.activeConversation = chatRoomHistory.messages,
       error : () => this.activeConversation = []

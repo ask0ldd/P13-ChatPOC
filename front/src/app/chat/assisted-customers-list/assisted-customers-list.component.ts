@@ -1,8 +1,7 @@
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { IUser } from 'src/app/interfaces/IUser';
 import { AssistedCustomersService } from 'src/app/services/assisted-customers.service';
-import { ChatSessionService } from 'src/app/services/chat-session.service';
 
 @Component({
   selector: 'app-assisted-customers-list',
@@ -11,25 +10,20 @@ import { ChatSessionService } from 'src/app/services/chat-session.service';
 })
 export class AssistedCustomersListComponent implements OnDestroy {
 
-  @Input() switchConversation : ((customer: IUser) => void) | undefined
+  @Output() callSwitchConversation = new EventEmitter<IUser>();
 
   private assistedCustomersSubscription!: Subscription
   assistedCustomers : Array<IUser> = []
 
   constructor(
     private assistedCustomersService : AssistedCustomersService,
-    // private chatSessionService : ChatSessionService,
   )
   {
     this.assistedCustomersSubscription = this.assistedCustomersService.list$.subscribe(assistedCustomers => this.assistedCustomers = assistedCustomers)
   }
 
-  /*setActiveChatroom(chatroomId : string){
-    this.chatSessionService.setActiveChatroom(chatroomId) // replace
-  }*/
-
-  executeSwitchConversation(customer : IUser){
-    if(this.switchConversation) this.switchConversation(customer)
+  triggerSwitchConversation(customer : IUser){
+    this.callSwitchConversation.emit(customer)
   }
 
   ngOnDestroy(): void {

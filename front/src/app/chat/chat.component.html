@@ -7,7 +7,7 @@
             </div>
         </div>
     </div>
-    <app-assisted-customers-list [switchConversation]="switchConversation"></app-assisted-customers-list>
+    <app-assisted-customers-list (callSwitchConversation)="switchConversation($event)"></app-assisted-customers-list>
     <div *ngIf="activeCustomer?.username != '' && currentRole == 'ADMIN'">
         You are speaking with {{activeCustomer?.username}}
     </div>
