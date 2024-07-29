@@ -43,8 +43,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     private router : Router)
   {
     this.queueSubscription = this.queueService.queue$.subscribe(queue => this.queue = queue)
-    // this.inMemoryHistorySubscription = this.chatSessionService.inMemoryHistory$.subscribe(history => this.chatHistory = history)
   }
+
+  // !!! gerer qd un admin se deco alors qu'un customer n'est pas deco, il doit pouvoir etre remis en queue automatiquement
+  // pr que son pb soit solutionne par un autre admin
 
   ngOnInit(): void {
     // if the user is not logged, go back to login
@@ -54,7 +56,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     else {
       this.activeRoomId = this.authService.getLoggedUserPrivateRoomId()
       // by default, the user is connected to its own private chatroom
-      // this.chatService.connectToChatroom(this.displayReceivedMessageCallback, this.activeRoomId)
       this.chatService.initChatClient(this.receivedMessageCallback, this.activeRoomId)
       this.currentRole = this.authService.getLoggedUserRole()
       // if the user is an admin, retrieve the queue and autorefresh it every x secs
@@ -62,7 +63,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.queueService.startPolling()
       }
       // retrieve the history for the current chatroom
-      // this.chatSessionService.fetchHistory()
       this.conversationSubscription = this.chatService.fetchHistory$(this.activeRoomId).pipe(take(1)).subscribe({
         next : (chatRoomHistory) => this.activeConversation = chatRoomHistory.messages,
         error : () => this.activeConversation = []
@@ -71,7 +71,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   receivedMessageCallback = (message : IMessage) => {
-    // this.chatSessionService.pushToHistory(message)
     this.activeConversation.push(JSON.parse(message.body) as IChatMessage)
     // if(this.authService.getLoggedUserRole() == "ADMIN") this.chatNotificationsService.pushNotification(this.authService.getLoggedUserPrivateRoomId())
     this.resetInactivityTimer()
@@ -91,11 +90,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.messageTextarea.nativeElement.value = ""
     this.resetInactivityTimer()
   }
-
-  switchConversation(){
-    // fetch messages
-  }
-
 
   /*
   moveToAssignedCustomerRoom(chatroomId : string){
@@ -117,15 +111,33 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }*/
 
-  assignCustomerToAdmin(customerName : string){
-    const customer = this.queue.find(customer => customer.username == customerName)
-    if(customer != null){
-      this.activeCustomer = customer
+  assignNewCustomerToAdmin(customer : IUser){
+    // const customer = this.queue.find(customer => customer.username == customerName)
+    if(this.queue.find(queueCustomer => JSON.stringify(queueCustomer) === JSON.stringify(customer))){
       this.assistedCustomersService.addToList(customer)
       // this.assistedCustomersService.setActiveCustomer(customer)
       this.queueService.removeUser(customer.username)
       this.chatService.initNewConversation(this.receivedMessageCallback, customer)
+      /*if(this.conversationSubscription) this.conversationSubscription.unsubscribe()
+      this.activeCustomer = customer
+      this.activeRoomId = customer.chatroomId
+      this.conversationSubscription = this.chatService.fetchHistory$(this.activeRoomId).pipe(take(1)).subscribe({
+        next : (chatRoomHistory) => this.activeConversation = chatRoomHistory.messages,
+        error : () => this.activeConversation = []
+      })*/
+      this.switchConversation(customer)
     }
+  }
+
+  
+  switchConversation(customer : IUser){
+    this.activeCustomer = customer
+    this.activeRoomId = customer.chatroomId
+    if(this.conversationSubscription) this.conversationSubscription.unsubscribe()
+    this.conversationSubscription = this.chatService.fetchHistory$(this.activeRoomId).pipe(take(1)).subscribe({
+      next : (chatRoomHistory) => this.activeConversation = chatRoomHistory.messages,
+      error : () => this.activeConversation = []
+    })
   }
 
   /**
