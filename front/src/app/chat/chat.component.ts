@@ -91,40 +91,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.resetInactivityTimer()
   }
 
-  /*
-  moveToAssignedCustomerRoom(chatroomId : string){
-    if(this.assignedCustomer == null) return
-    this.chatService.disconnect()
-    this.chatSessionService.setActiveChatroom(chatroomId)
-    this.chatService.connectToChatroom(this.displayReceivedMessageCallback, chatroomId)
-    this.chatSessionService.fetchHistory()
-  }
-
-  assignCustomerToAdmin(customerName : string){
-    // is customer still in queue
-    const customer = this.queue.find(customer => customer.username == customerName)
-    if(customer != null) {
-      this.assignedCustomer = customer
-      this.queueService.removeUser(this.assignedCustomer.username)
-      this.moveToAssignedCustomerRoom(this.assignedCustomer.chatroomId)
-      this.assistedCustomersService.addToList(customer)
-    }
-  }*/
-
   assignNewCustomerToAdmin(customer : IUser){
-    // const customer = this.queue.find(customer => customer.username == customerName)
     if(this.queue.find(queueCustomer => JSON.stringify(queueCustomer) === JSON.stringify(customer))){
       this.assistedCustomersService.addToList(customer)
-      // this.assistedCustomersService.setActiveCustomer(customer)
       this.queueService.removeUser(customer.username)
       this.chatService.initNewConversation(this.receivedMessageCallback, customer)
-      /*if(this.conversationSubscription) this.conversationSubscription.unsubscribe()
-      this.activeCustomer = customer
-      this.activeRoomId = customer.chatroomId
-      this.conversationSubscription = this.chatService.fetchHistory$(this.activeRoomId).pipe(take(1)).subscribe({
-        next : (chatRoomHistory) => this.activeConversation = chatRoomHistory.messages,
-        error : () => this.activeConversation = []
-      })*/
       this.switchConversation(customer)
     }
   }
@@ -140,6 +111,11 @@ export class ChatComponent implements OnInit, OnDestroy {
       next : (chatRoomHistory) => this.activeConversation = chatRoomHistory.messages,
       error : () => this.activeConversation = []
     })
+  }
+
+  quitConversation(customer : IUser){
+    if(JSON.stringify(customer) != JSON.stringify(this.activeCustomer)) return
+
   }
 
   /**
