@@ -31,8 +31,9 @@ export class AssistedCustomersListComponent implements OnDestroy {
   triggerCloseConversation(customer : IUser){
     const updatedAssistedCustomers = this.assistedCustomers.filter(assistedCustomer => assistedCustomer != customer)
     this.assistedCustomers = updatedAssistedCustomers
-    this.activeCustomer = this.assistedCustomers[0]
-    this.callSwitchConversation.emit(this.activeCustomer)
+    this.activeCustomer = this.assistedCustomers.length != 0 ? this.assistedCustomers[0] : null
+    // should send a message "leaved the conversation"
+    if(this.activeCustomer != null) this.callSwitchConversation.emit(this.activeCustomer)
     this.callCloseConversation.emit(customer)
   }
 

@@ -55,8 +55,9 @@ export class ChatService {
 
   initNewConversation(callback : (message : IMessage) => void, customer : IUser){
     if (this.stompClient) {
-      const sub = this.subscribe(callback, customer.chatroomId)
-      if(sub != null) this.subs.push(sub)
+      const sub = this.subscribe(callback, customer.chatroomId) // array should be [{chatroomId : '', sub : sub}, ...]
+      // const subObject = {chatroomId : customer.chatroomId, sub : sub} should be implemented into this.subscribe
+      // if(sub != null) this.subs.push(sub)
     } else {
       console.error("StompClient should be initialized first.")
     }
@@ -129,6 +130,10 @@ export class ChatService {
    */
   fetchHistory$(chatroomId : string) : Observable<IChatRoomHistory>{
     return this.httpClient.get<IChatRoomHistory>(`api/history/${chatroomId}`)
+  }
+
+  closeConversation(customer : IUser){
+
   }
 
   /**

@@ -20,9 +20,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('messageTextarea')
   messageTextarea!: ElementRef;
 
-  // chatHistory : IChatMessage[] = []
   queue : IUser[] = []
-  // private inMemoryHistorySubscription! : Subscription
   private conversationSubscription! : Subscription
   private queueSubscription! : Subscription
   private timerSubscription!: Subscription
@@ -113,8 +111,10 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   closeConversation(customer : IUser){
     if(JSON.stringify(customer) != JSON.stringify(this.activeCustomer)) return
-    
+    // should unsub from the conversation
   }
+
+  // !!! should have one inactivity timer per conversation // own service ??!!!
 
   /**
    * Starts the inactivity timer.
@@ -123,7 +123,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   startInactivityTimer(minutes : number = 5) {
     const oneMinute = 60000
     this.timerSubscription = timer(minutes*oneMinute, minutes*oneMinute).subscribe(
-      () => this.closeChat()
+      () => this.closeChat() // !!! should pass user
     )
   }
 
