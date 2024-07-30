@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { IUser } from 'src/app/interfaces/IUser';
 import { AssistedCustomersService } from 'src/app/services/assisted-customers.service';
@@ -11,6 +11,7 @@ import { AssistedCustomersService } from 'src/app/services/assisted-customers.se
 export class AssistedCustomersListComponent implements OnDestroy {
 
   @Output() callSwitchConversation = new EventEmitter<IUser>();
+  @Input() activeCustomer : IUser | null = null
 
   private assistedCustomersSubscription!: Subscription
   assistedCustomers : Array<IUser> = []
