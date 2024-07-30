@@ -11,6 +11,7 @@ import { AssistedCustomersService } from 'src/app/services/assisted-customers.se
 export class AssistedCustomersListComponent implements OnDestroy {
 
   @Output() callSwitchConversation = new EventEmitter<IUser>();
+  @Output() callCloseConversation = new EventEmitter<IUser>();
   @Input() activeCustomer : IUser | null = null
 
   private assistedCustomersSubscription!: Subscription
@@ -25,6 +26,14 @@ export class AssistedCustomersListComponent implements OnDestroy {
 
   triggerSwitchConversation(customer : IUser){
     this.callSwitchConversation.emit(customer)
+  }
+
+  triggerCloseConversation(customer : IUser){
+    const updatedAssistedCustomers = this.assistedCustomers.filter(assistedCustomer => assistedCustomer != customer)
+    this.assistedCustomers = updatedAssistedCustomers
+    this.activeCustomer = this.assistedCustomers[0]
+    this.callSwitchConversation.emit(this.activeCustomer)
+    this.callCloseConversation.emit(customer)
   }
 
   ngOnDestroy(): void {

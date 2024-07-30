@@ -8,9 +8,7 @@ import { QueueService } from '../services/queue.service';
 import { Subscription, take, timer } from 'rxjs';
 import { IUser } from '../interfaces/IUser';
 import { TUserRole } from '../types/TUserRole';
-import { ChatSessionService } from '../services/chat-session.service';
 import { AssistedCustomersService } from '../services/assisted-customers.service';
-import { ChatNotificationsService } from '../services/chat-notifications.service';
 
 @Component({
   selector: 'app-chat',
@@ -113,9 +111,9 @@ export class ChatComponent implements OnInit, OnDestroy {
     })
   }
 
-  quitConversation(customer : IUser){
+  closeConversation(customer : IUser){
     if(JSON.stringify(customer) != JSON.stringify(this.activeCustomer)) return
-
+    
   }
 
   /**
