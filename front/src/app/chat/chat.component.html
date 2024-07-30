@@ -9,9 +9,6 @@
         (callSwitchConversation)="switchConversation($event)"
         (callCloseConversation)="closeConversation($event)"
     ></app-assisted-customers-list>
-    <div *ngIf="activeCustomer?.username != '' && currentRole == 'ADMIN'">
-        You are speaking with {{activeCustomer?.username}}
-    </div>
     <div style="width: 100%;" *ngFor="let message of activeConversation">
         <app-message *ngIf="message.type == 'CHAT'" [message]="message"></app-message>
         <app-joining-alert *ngIf="message.type == 'JOIN'"></app-joining-alert>
