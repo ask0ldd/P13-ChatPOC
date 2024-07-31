@@ -67,9 +67,13 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   receivedMessageCallback = (message : IMessage) => {
-    this.activeConversation.push(JSON.parse(message.body) as IChatMessage)
+    const parsedMessage = JSON.parse(message.body) as IChatMessage
+    // message is displayed only if it targets the active chatroom
+    if('/queue/' + this.activeRoomId == message.headers?.['destination'] && parsedMessage) {
+      this.activeConversation.push(parsedMessage)
+      this.resetInactivityTimer()
+    }
     // if(this.authService.getLoggedUserRole() == "ADMIN") this.chatNotificationsService.pushNotification(this.authService.getLoggedUserPrivateRoomId())
-    this.resetInactivityTimer()
   }
 
   /**
