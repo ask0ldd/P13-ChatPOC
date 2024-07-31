@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class ChatNotificationsService {
 
-  private notifications = new Set()
+  private notifications = new Set<string>()
 
   constructor() { }
 
@@ -17,7 +17,11 @@ export class ChatNotificationsService {
     this.notifications.delete(chatroomId)
   }
 
-  getNotifications(){
+  getNotifications() : Set<string>{
     return this.notifications
+  }
+
+  hasNotification(chatroomId : string) : boolean{
+    return this.notifications.has(chatroomId)
   }
 }

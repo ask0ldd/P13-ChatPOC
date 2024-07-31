@@ -9,6 +9,7 @@ import { Subscription, take, timer } from 'rxjs';
 import { IUser } from '../interfaces/IUser';
 import { TUserRole } from '../types/TUserRole';
 import { AssistedCustomersService } from '../services/assisted-customers.service';
+import { ChatNotificationsService } from '../services/chat-notifications.service';
 
 @Component({
   selector: 'app-chat',
@@ -36,6 +37,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private authService : AuthService, 
     private queueService : QueueService,
     private assistedCustomersService : AssistedCustomersService,
+    private chatNotificationsService : ChatNotificationsService,
     private router : Router)
   {
     this.queueSubscription = this.queueService.queue$.subscribe(queue => this.queue = queue)
@@ -68,12 +70,19 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   receivedMessageCallback = (message : IMessage) => {
     const parsedMessage = JSON.parse(message.body) as IChatMessage
+    const destinationRoom = message.headers?.['destination'] ? message.headers?.['destination'] : null
+
+    if(destinationRoom == null || parsedMessage == null) return
     // message is displayed only if it targets the active chatroom
-    if('/queue/' + this.activeRoomId == message.headers?.['destination'] && parsedMessage) {
+    if('/queue/' + this.activeRoomId == destinationRoom) {
       this.activeConversation.push(parsedMessage)
       this.resetInactivityTimer()
+      return
     }
-    // if(this.authService.getLoggedUserRole() == "ADMIN") this.chatNotificationsService.pushNotification(this.authService.getLoggedUserPrivateRoomId())
+
+    if(this.authService.getLoggedUserRole() != "ADMIN") return
+    // if the logged user is an admin receiving a message from a inactive subscribed chatrom
+    this.chatNotificationsService.pushNotification(destinationRoom)
   }
 
   /**
