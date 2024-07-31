@@ -11,7 +11,7 @@
     ></app-assisted-customers-list>
     <div style="width: 100%;" *ngFor="let message of activeConversation">
         <app-message *ngIf="message.type == 'CHAT'" [message]="message"></app-message>
-        <app-joining-alert *ngIf="message.type == 'JOIN'"></app-joining-alert>
+        <app-joining-alert *ngIf="message.type == 'JOIN' && currentRole == 'CUSTOMER'"></app-joining-alert>
     </div>
     <div class="newMessageContainer">
         <textarea style="resize:none" placeholder="Écrivez ici votre message" #messageTextarea></textarea>

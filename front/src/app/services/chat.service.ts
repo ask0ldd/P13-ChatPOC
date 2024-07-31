@@ -55,6 +55,7 @@ export class ChatService {
 
   initNewConversation(callback : (message : IMessage) => void, customer : IUser){
     if (this.stompClient) {
+      this.sendMessage("JOIN", "An admin is here to help you.", customer.chatroomId)
       const sub = this.subscribe(callback, customer.chatroomId) // array should be [{chatroomId : '', sub : sub}, ...]
       // const subObject = {chatroomId : customer.chatroomId, sub : sub} should be implemented into this.subscribe
       // if(sub != null) this.subs.push(sub)

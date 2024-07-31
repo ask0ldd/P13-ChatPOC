@@ -96,7 +96,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
-  
   switchConversation(customer : IUser){
     console.log("switchConvCustomer : " + JSON.stringify(customer))
     this.activeCustomer = customer
