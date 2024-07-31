@@ -1,14 +1,15 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { IUser } from 'src/app/interfaces/IUser';
 import { AssistedCustomersService } from 'src/app/services/assisted-customers.service';
+import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
 
 @Component({
   selector: 'app-assisted-customers-list',
   templateUrl: './assisted-customers-list.component.html',
   styleUrls: ['./assisted-customers-list.component.css']
 })
-export class AssistedCustomersListComponent implements OnDestroy {
+export class AssistedCustomersListComponent implements OnDestroy, OnInit {
 
   @Output() callSwitchConversation = new EventEmitter<IUser>();
   @Output() callCloseConversation = new EventEmitter<IUser>();
@@ -16,12 +17,18 @@ export class AssistedCustomersListComponent implements OnDestroy {
 
   private assistedCustomersSubscription!: Subscription
   assistedCustomers : Array<IUser> = []
+  notifications = new Set<string>()
 
   constructor(
     private assistedCustomersService : AssistedCustomersService,
+    public chatNotificationsService : ChatNotificationsService,
   )
   {
     this.assistedCustomersSubscription = this.assistedCustomersService.list$.subscribe(assistedCustomers => this.assistedCustomers = assistedCustomers)
+  }
+
+  ngOnInit(): void {
+      this.chatNotificationsService.notifications$.subscribe(notifications => this.notifications = notifications)
   }
 
   triggerSwitchConversation(customer : IUser){
