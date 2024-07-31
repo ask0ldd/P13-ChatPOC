@@ -5,6 +5,7 @@
         </div>
     </div>
     <app-assisted-customers-list
+        *ngIf="currentRole == 'ADMIN'"
         [activeCustomer]="activeCustomer" 
         (callSwitchConversation)="switchConversation($event)"
         (callCloseConversation)="closeConversation($event)"
