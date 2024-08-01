@@ -16,22 +16,23 @@ export class AssistedCustomersListComponent implements OnDestroy, OnInit {
   @Input() activeCustomer : IUser | null = null
 
   private assistedCustomersSubscription!: Subscription
+  private chatNotificationsSubscription!: Subscription
   assistedCustomers : Array<IUser> = []
   notifications = new Set<string>()
 
   constructor(
     private assistedCustomersService : AssistedCustomersService,
-    public chatNotificationsService : ChatNotificationsService,
+    private chatNotificationsService : ChatNotificationsService,
   )
-  {
-    this.assistedCustomersSubscription = this.assistedCustomersService.list$.subscribe(assistedCustomers => this.assistedCustomers = assistedCustomers)
-  }
+  { }
 
   ngOnInit(): void {
-      this.chatNotificationsService.notifications$.subscribe(notifications => this.notifications = notifications)
+      this.assistedCustomersSubscription = this.assistedCustomersService.list$.subscribe(assistedCustomers => this.assistedCustomers = assistedCustomers)
+      this.chatNotificationsSubscription = this.chatNotificationsService.notifications$.subscribe(notifications => this.notifications = notifications)
   }
 
   triggerSwitchConversation(customer : IUser){
+    console.log(JSON.stringify(this.notifications))
     this.callSwitchConversation.emit(customer)
   }
 
@@ -46,5 +47,6 @@ export class AssistedCustomersListComponent implements OnDestroy, OnInit {
 
   ngOnDestroy(): void {
     if(this.assistedCustomersSubscription) this.assistedCustomersSubscription.unsubscribe()
+    if(this.chatNotificationsSubscription) this.chatNotificationsSubscription.unsubscribe()
   }
 }
