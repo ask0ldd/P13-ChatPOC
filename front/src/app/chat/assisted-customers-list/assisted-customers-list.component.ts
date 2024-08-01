@@ -32,7 +32,8 @@ export class AssistedCustomersListComponent implements OnDestroy, OnInit {
   }
 
   triggerSwitchConversation(customer : IUser){
-    console.log(JSON.stringify(this.notifications))
+    // console.log(JSON.stringify(this.notifications))
+    this.chatNotificationsService.pullNotification(customer.chatroomId)
     this.callSwitchConversation.emit(customer)
   }
 

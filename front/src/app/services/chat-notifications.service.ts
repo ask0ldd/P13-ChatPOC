@@ -12,8 +12,9 @@ export class ChatNotificationsService {
   constructor() { }
 
   pushNotification(chatroomId : string){
-    console.log('pushing notif : ' + chatroomId)
+    // console.log('pushing notif : ' + chatroomId)
     this.notifications.add(chatroomId)
+    // console.log('updated notif : ' + JSON.stringify(this.notifications))
     this.notifications$.next(this.notifications)
   }
 
