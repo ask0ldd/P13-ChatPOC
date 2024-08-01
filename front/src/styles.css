@@ -30,3 +30,12 @@ button:hover {
   background-color: #2292ee;
   box-shadow: 0 4px 8px #97c8f0;
 }
+
+body {
+  font-family: "Jost", sans-serif;
+  font-size: 1rem;
+  color: #333;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

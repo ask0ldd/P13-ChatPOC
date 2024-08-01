@@ -1,9 +1,14 @@
-div.assistedCustomersContainer {
+:host {
+  width: 100%;
+}
+
+.assistedCustomersContainer {
   display: flex;
   flex-direction: row;
   column-gap: 1rem;
   width: 100%;
-  padding: 1rem 0.5rem;
+  /*padding: 1rem 0.5rem;
+  align-items: flex-start;*/
 }
 
 /*div.assistedCustomersContainer div {
