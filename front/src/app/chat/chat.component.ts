@@ -70,11 +70,13 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   receivedMessageCallback = (message : IMessage) => {
     const parsedMessage = JSON.parse(message.body) as IChatMessage
-    const destinationRoom = message.headers?.['destination'] ? message.headers?.['destination'] : null
+    const destinationRoomEndpoint = message.headers?.['destination'] ? message.headers?.['destination'] : null
 
-    if(destinationRoom == null || parsedMessage == null) return
+    if(destinationRoomEndpoint == null || parsedMessage == null) return
+
+    const destinationRoomId = destinationRoomEndpoint.split('/')[destinationRoomEndpoint.split('/').length-1]
     // message is displayed only if it targets the active chatroom
-    if('/queue/' + this.activeRoomId == destinationRoom) {
+    if(this.activeRoomId == destinationRoomId) {
       this.activeConversation.push(parsedMessage)
       this.resetInactivityTimer()
       return
@@ -82,7 +84,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     if(this.authService.getLoggedUserRole() != "ADMIN") return
     // if the logged user is an admin receiving a message from a inactive subscribed chatrom
-    this.chatNotificationsService.pushNotification(destinationRoom)
+    this.chatNotificationsService.pushNotification(destinationRoomId)
   }
 
   /**
