@@ -19,7 +19,7 @@ export class ChatService {
   private stompClient! : CompatClient
   private subs : StompSubscription[] = []
 
-  // private conversations : IChatConversation = []
+  private activeConversationsSubs : Set<{chatroomId : string, sub : StompSubscription}> = new Set<{chatroomId : string, sub : StompSubscription}>()
 
   // assisted customers
   // conversations
@@ -57,8 +57,8 @@ export class ChatService {
     if (this.stompClient) {
       this.sendMessage("JOIN", "An admin is here to help you.", customer.chatroomId)
       const sub = this.subscribe(callback, customer.chatroomId) // array should be [{chatroomId : '', sub : sub}, ...]
-      // const subObject = {chatroomId : customer.chatroomId, sub : sub} should be implemented into this.subscribe
-      // if(sub != null) this.subs.push(sub)
+      // used later to unsub when closing a conversation
+      if(sub != null) this.activeConversationsSubs.add({chatroomId: customer.chatroomId, sub: sub})
     } else {
       console.error("StompClient should be initialized first.")
     }
@@ -134,7 +134,11 @@ export class ChatService {
   }
 
   closeConversation(customer : IUser){
-
+    const foundConversation = Array.from(this.activeConversationsSubs).find(item => item.chatroomId == customer.chatroomId)
+    if(foundConversation){
+      foundConversation?.sub.unsubscribe()
+      this.activeConversationsSubs.delete(foundConversation)
+    }
   }
 
   /**
