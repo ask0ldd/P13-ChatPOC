@@ -61,6 +61,12 @@ textarea {
   padding: 1rem 0.5rem;
 }
 
+.customerListTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .customerButton {
   height: 3rem;
   padding-left: 1.5rem;
@@ -75,6 +81,7 @@ textarea {
   font-weight: 600;
   column-gap: 1.5rem;
   overflow: hidden;
+  border: 2px solid #57abf0;
 }
 
 .customerButton:hover {
