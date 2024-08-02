@@ -65,21 +65,6 @@ export class ChatService {
   }
 
   /**
-   * OBSOLETE ?!!!
-   * @method connectToChatroom
-   * @description Connects to a specific chatroom.
-   * @param {function} callback - Callback function to handle incoming messages.
-   * @param {string} privateChatroomId - ID of the private chatroom to connect to.
-   */
-  /*connectToChatroom(callback : (message : IMessage) => void, privateChatroomId : string){
-      if (this.stompClient) {
-        this.subscribe(callback, privateChatroomId)
-      } else {
-        console.error("StompClient should be initialized first.")
-      }
-  }*/
-
-  /**
    * @method subscribe
    * @description Subscribes to a chatroom.
    * @param {function} callback - Callback function to handle incoming messages.
