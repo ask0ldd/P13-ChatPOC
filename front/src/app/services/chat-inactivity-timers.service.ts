@@ -12,6 +12,11 @@ export class ChatInactivityTimersService {
 
   constructor() { }
 
+  /**
+   * Starts an inactivity timer for a chatroom.
+   * @param {string} chatroomId - The ID of the chatroom.
+   * @param {number} [minutes=5] - The number of minutes for the inactivity timer.
+   */
   startInactivityTimer(chatroomId : string, minutes : number = 5) {
     if([...this.chatroomsInactivityTimers].findIndex(timer => timer.chatroomId == chatroomId) > 0) {
       this.resetInactivityTimer(chatroomId)
@@ -23,11 +28,20 @@ export class ChatInactivityTimersService {
     this.chatroomsInactivityTimers.add({chatroomId : chatroomId, timerSubscription : timerSubscription})
   }
 
+  /**
+   * Resets the inactivity timer for a chatroom.
+   * @param {string} chatroomId - The ID of the chatroom.
+   * @param {number} [minutes=5] - The number of minutes for the inactivity timer.
+   */
   resetInactivityTimer(chatroomId : string, minutes : number = 5) {
     this.killInactivityTimer(chatroomId)
     this.startInactivityTimer(chatroomId, minutes)
   }
 
+  /**
+   * Kills the inactivity timer for a chatroom.
+   * @param {string} chatroomId - The ID of the chatroom.
+   */
   killInactivityTimer(chatroomId : string) {
     const chatroomsInactivityTimersAsArray = [...this.chatroomsInactivityTimers]
     const chatroomTimerIndex = chatroomsInactivityTimersAsArray.findIndex(timer => timer.chatroomId == chatroomId)
@@ -37,6 +51,10 @@ export class ChatInactivityTimersService {
     this.chatroomsInactivityTimers = new Set(chatroomsInactivityTimersAsArray)
   }
 
+  /**
+   * Closes the chat for a given chatroom.
+   * @param {string} chatroomId - The ID of the chatroom to close.
+   */
   closeChat(chatroomId : string){
     console.log("Closing the conversation...")
   }
