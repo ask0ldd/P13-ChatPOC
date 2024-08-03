@@ -125,7 +125,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   closeConversation(customer : IUser){
     if(JSON.stringify(customer) != JSON.stringify(this.activeCustomer)) return
-    // should unsub from the conversation
+    this.chatService.closeConversation(customer)
   }
 
   // !!! should have one inactivity timer per conversation // own service ??!!!

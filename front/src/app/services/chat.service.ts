@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { TMessageType } from '../types/TMessageType';
 import { IChatConversation } from '../interfaces/IChatConversation';
 import { IUser } from '../interfaces/IUser';
+import { ChatNotificationsService } from './chat-notifications.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,12 +21,6 @@ export class ChatService {
   private subs : StompSubscription[] = []
 
   private activeConversationsSubs : Set<{chatroomId : string, sub : StompSubscription}> = new Set<{chatroomId : string, sub : StompSubscription}>()
-
-  // assisted customers
-  // conversations
-  // private activeRoom : string
-  // private openedRooms : string[]
-
 
   /**
    * @constructor
