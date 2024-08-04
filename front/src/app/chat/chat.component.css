@@ -54,7 +54,7 @@ textarea {
   border-radius: 4px;
 }
 
-.customerList {
+/*.customerList {
   display: flex;
   column-gap: 1rem;
   width: calc(100% - 1.5rem);
@@ -115,4 +115,4 @@ textarea {
   align-items: center;
   width: 3rem;
   margin-left: 1.5rem;
-}
+}*/
