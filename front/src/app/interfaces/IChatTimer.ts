@@ -4,7 +4,7 @@ import { Subscription } from "rxjs"
     [chatroomId : string] : Subscription
 }*/
 
-export interface ITimerSubs {
+export interface IChatTimer {
     chatroomId : string
     timerSubscription : Subscription
 }
