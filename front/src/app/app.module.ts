@@ -10,6 +10,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { DateFormatPipe } from './pipes/date-format.pipe';
 import { JoiningAlertComponent } from './chat/joining-alert/joining-alert.component';
 import { AssistedCustomersListComponent } from './chat/assisted-customers-list/assisted-customers-list.component';
+import { QueueListComponent } from './chat/queue-list/queue-list.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { AssistedCustomersListComponent } from './chat/assisted-customers-list/a
     DateFormatPipe,
     JoiningAlertComponent,
     AssistedCustomersListComponent,
+    QueueListComponent,
   ],
   imports: [
     BrowserModule,
