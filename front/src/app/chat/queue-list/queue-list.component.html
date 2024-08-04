@@ -1,0 +1,6 @@
+<div class="customerList">
+    <div class="customerListTitle">En attente de support :  </div>
+    <div class="customerButton" *ngFor="let user of queue; let i = index" (click)="triggerAssignNewCustomerToAdmin(user)">
+        {{user.username}}
+    </div>
+</div>

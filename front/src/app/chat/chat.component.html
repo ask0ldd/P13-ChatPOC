@@ -1,10 +1,15 @@
 <main class="chatMain">
-    <div *ngIf="currentRole == 'ADMIN'" id="queue" class="customerList">
+    <!--<div *ngIf="currentRole == 'ADMIN'" id="queue" class="customerList">
         <div class="customerListTitle">En attente de support :  </div>
         <div class="customerButton" *ngFor="let user of queue; let i = index" (click)="assignNewCustomerToAdmin(user)">
             {{user.username}}
         </div>
-    </div>
+    </div>-->
+    <app-queue-list 
+        *ngIf="currentRole == 'ADMIN'" id="queue"
+        [queue]="queue"
+        (callAssignNewCustomerToAdmin)="assignNewCustomerToAdmin($event)"
+    ></app-queue-list>
     <app-assisted-customers-list
         *ngIf="currentRole == 'ADMIN'"
         [activeCustomer]="activeCustomer" 
