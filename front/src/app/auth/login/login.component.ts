@@ -29,6 +29,12 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
   }
 
+  /**
+   * Handles the form submission for user login.
+   * Validates the form and calls the authentication service to log in the user.
+   * 
+   * @method
+   */
   onSubmit(){
     if(this.loginForm.valid)
     {
