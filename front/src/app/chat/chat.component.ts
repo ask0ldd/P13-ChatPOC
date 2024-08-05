@@ -68,6 +68,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Callback function for received messages.
+   * 
+   * @param {IMessage} message - The received message object.
+   */
   receivedMessageCallback = (message : IMessage) => {
     const parsedMessage = JSON.parse(message.body) as IChatMessage
     const destinationRoomEndpoint = message.headers?.['destination'] ? message.headers?.['destination'] : null
@@ -102,6 +107,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.resetInactivityTimer()
   }
 
+  /**
+   * Assigns a new customer to the admin and initializes the conversation.
+   * 
+   * @param {IUser} customer - The customer to be assigned.
+   */
   assignNewCustomerToAdmin(customer : IUser){
     if(this.queue.find(queueCustomer => JSON.stringify(queueCustomer) === JSON.stringify(customer))){
       this.assistedCustomersService.addToList(customer)
@@ -111,6 +121,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Switches the conversation to a different customer.
+   * 
+   * @param {IUser} customer - The customer for the new conversation.
+   */
   switchConversation(customer : IUser){
     console.log("switchConvCustomer : " + JSON.stringify(customer))
     this.activeCustomer = customer
@@ -123,6 +138,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     })
   }
 
+  /**
+   * Closes the active conversation for the specified customer.
+   * 
+   * @param {IUser} customer - The customer whose conversation is to be closed.
+   */
   closeConversation(customer : IUser){
     if(JSON.stringify(customer) != JSON.stringify(this.activeCustomer)) return
     this.chatService.closeConversation(customer)
