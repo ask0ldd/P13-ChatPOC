@@ -31,12 +31,24 @@ export class AssistedCustomersListComponent implements OnDestroy, OnInit {
       this.chatNotificationsSubscription = this.chatNotificationsService.notifications$.subscribe(notifications => this.notifications = notifications)
   }
 
+  /**
+   * Triggers the switch conversation event for a specific customer.
+   * 
+   * @param {IUser} customer - The customer whose conversation is to be switched.
+   * @returns {void}
+   */
   triggerSwitchConversation(customer : IUser){
     // console.log(JSON.stringify(this.notifications))
     this.chatNotificationsService.pullNotification(customer.chatroomId)
     this.callSwitchConversation.emit(customer)
   }
 
+  /**
+   * Triggers the close conversation event for a specific customer.
+   * 
+   * @param {IUser} customer - The customer whose conversation is to be closed.
+   * @returns {void}
+   */
   triggerCloseConversation(customer : IUser){
     const updatedAssistedCustomers = this.assistedCustomers.filter(assistedCustomer => assistedCustomer != customer)
     this.assistedCustomers = updatedAssistedCustomers
