@@ -32,7 +32,6 @@ export class AuthService {
 
   /**
    * Disconnects the currently logged-in user.
-
    */
   disconnect(): void{
     this.httpClient.post(`${this.pathService}/disconnect`, {username : this.loggedUser.username}).subscribe()

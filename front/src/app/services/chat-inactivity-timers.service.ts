@@ -7,7 +7,6 @@ import { IChatTimer } from '../interfaces/IChatTimer';
 })
 export class ChatInactivityTimersService {
 
-  // chatroomsInactivityTimers = new Set<IChatTimer>()
   oneMinute : number = 60000
   INACTIVITY_TIMEOUT = 5 * this.oneMinute
   private timers : Map<string, IChatTimer> = new Map();

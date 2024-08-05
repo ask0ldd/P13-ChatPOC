@@ -31,6 +31,11 @@ export class ChatService {
     // this.initializeClient()
   }
 
+  /**
+   * Initializes the STOMP client and subscribes to a private chatroom.
+   * @param {function} callback - Callback function to handle incoming messages.
+   * @param {string} privateChatroomId - ID of the private chatroom to subscribe to.
+   */
   initChatClient(callback : (message : IMessage) => void, privateChatroomId : string){
     this.socket = new SockJS(this.baseChatUrl)
     this.stompClient = Stomp.over(this.socket)
@@ -48,6 +53,12 @@ export class ChatService {
     this.stompClient.activate()
   }
 
+  /**
+   * Initializes a new conversation and subscribes to the chatroom.
+   * Sends a JOIN message to notify that an admin has joined.
+   * @param {function} callback - Callback function to handle incoming messages.
+   * @param {IUser} customer - User object representing the customer in the conversation.
+   */
   initNewConversation(callback : (message : IMessage) => void, customer : IUser){
     if (this.stompClient) {
       this.sendMessage("JOIN", "An admin is here to help you.", customer.chatroomId)
@@ -113,6 +124,10 @@ export class ChatService {
     return this.httpClient.get<IChatRoomHistory>(`api/history/${chatroomId}`)
   }
 
+  /**
+   * Closes an active conversation by unsubscribing from the chatroom.
+   * @param {IUser} customer - User object representing the customer whose conversation is to be closed.
+   */
   closeConversation(customer : IUser){
     const foundConversation = Array.from(this.activeConversationsSubs).find(item => item.chatroomId == customer.chatroomId)
     if(foundConversation){
