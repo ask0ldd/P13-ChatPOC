@@ -13,6 +13,12 @@ export class ChatInactivityTimersService {
 
   constructor() { }
 
+  /**
+   * @method startTimer
+   * @description Starts an inactivity timer for a specific chat room.
+   * @param {string} chatroomId - The ID of the chat room.
+   * @returns {void}
+   */
   startTimer(chatroomId: string): void{
     this.killTimer(chatroomId)
     const subscription = timer(this.INACTIVITY_TIMEOUT).subscribe(() => {
@@ -22,6 +28,12 @@ export class ChatInactivityTimersService {
     this.timers.set(chatroomId, { chatroomId, timerSubscription: subscription })
   }
 
+  /**
+   * @method killTimer
+   * @description Stops and removes the inactivity timer for a specific chat room.
+   * @param {string} chatroomId - The ID of the chat room.
+   * @returns {void}
+   */
   killTimer(chatroomId: string): void {
     const timer = this.timers.get(chatroomId)
     if (timer) {
@@ -30,14 +42,22 @@ export class ChatInactivityTimersService {
     }
   }
 
+  /**
+   * @method resetTimer
+   * @description Resets the inactivity timer for a specific chat room.
+   * @param {string} chatroomId - The ID of the chat room.
+   * @returns {void}
+   */
   resetTimer(chatroomId: string): void {
-    /*const timer = this.timers.get(chatroomId)
-    if (timer) {
-      this.startTimer(chatroomId) // kill the timer if existing
-    }*/
    this.startTimer(chatroomId)
   }
 
+  /**
+   * @method closeChat
+   * @description Closes the chat for a given chatroom.
+   * @param {string} chatroomId - The ID of the chatroom to close.
+   * @returns {void}
+   */
   pauseTimer(chatroomId: string): void {
     this.killTimer(chatroomId)
   }
