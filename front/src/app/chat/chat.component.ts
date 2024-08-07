@@ -83,7 +83,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     // message is displayed only if it targets the active chatroom
     if(this.activeRoomId == destinationRoomId) {
       this.activeConversation.push(parsedMessage)
-      this.resetInactivityTimer()
+      // this.resetInactivityTimer()
       return
     }
 
@@ -104,7 +104,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.authService.getLoggedUserPrivateRoomId())
     }
     this.messageTextarea.nativeElement.value = ""
-    this.resetInactivityTimer()
+    // this.resetInactivityTimer()
   }
 
   /**
@@ -146,35 +146,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   closeConversation(customer : IUser){
     if(JSON.stringify(customer) != JSON.stringify(this.activeCustomer)) return
     this.chatService.closeConversation(customer)
-  }
-
-  // !!! should have one inactivity timer per conversation // own service ??!!!
-
-  /**
-   * Starts the inactivity timer.
-   * @param minutes - The number of minutes before the chat is closed due to inactivity. Default is 5 minutes.
-   */
-  startInactivityTimer(minutes : number = 5) {
-    const oneMinute = 60000
-    this.timerSubscription = timer(minutes*oneMinute, minutes*oneMinute).subscribe(
-      () => this.closeChat() // !!! should pass user
-    )
-  }
-
-  /**
-   * Resets the inactivity timer.
-   * @param minutes - The number of minutes to reset the timer to. Default is 5 minutes.
-   */
-  resetInactivityTimer(minutes : number = 5) {
-    if (this.timerSubscription) this.timerSubscription.unsubscribe()
-    this.startInactivityTimer(minutes)
-  }
-
-  /**
-   * Closes the chat session.
-   */
-  closeChat(){
-    console.log("closing chat...")
   }
 
   ngOnDestroy(): void {
