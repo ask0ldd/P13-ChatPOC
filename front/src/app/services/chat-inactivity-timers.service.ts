@@ -13,31 +13,6 @@ export class ChatInactivityTimersService {
 
   constructor() { }
 
-  /*startInactivityTimer(chatroomId : string, minutes : number = 5) {
-    if([...this.chatroomsInactivityTimers].findIndex(timer => timer.chatroomId == chatroomId) > 0) {
-      this.resetInactivityTimer(chatroomId)
-      return
-    }
-    const timerSubscription = timer(minutes*this.oneMinute, minutes*this.oneMinute).subscribe(
-      () => this.closeChat(chatroomId)
-    )
-    this.chatroomsInactivityTimers.add({chatroomId : chatroomId, timerSubscription : timerSubscription})
-  }
-
-  resetInactivityTimer(chatroomId : string, minutes : number = 5) {
-    this.killInactivityTimer(chatroomId)
-    this.startInactivityTimer(chatroomId, minutes)
-  }
-
-  killInactivityTimer(chatroomId : string) {
-    const chatroomsInactivityTimersAsArray = [...this.chatroomsInactivityTimers]
-    const chatroomTimerIndex = chatroomsInactivityTimersAsArray.findIndex(timer => timer.chatroomId == chatroomId)
-    if(chatroomTimerIndex < 0) return
-    chatroomsInactivityTimersAsArray[chatroomTimerIndex].timerSubscription.unsubscribe()
-    chatroomsInactivityTimersAsArray.splice(chatroomTimerIndex, 1)
-    this.chatroomsInactivityTimers = new Set(chatroomsInactivityTimersAsArray)
-  }*/
-
   startTimer(chatroomId: string): void{
     this.killTimer(chatroomId)
     const subscription = timer(this.INACTIVITY_TIMEOUT).subscribe(() => {
