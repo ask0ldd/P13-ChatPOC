@@ -56,10 +56,15 @@ export class ChatInactivityTimersService {
   }
 
   resetTimer(chatroomId: string): void {
-    const timer = this.timers.get(chatroomId)
+    /*const timer = this.timers.get(chatroomId)
     if (timer) {
       this.startTimer(chatroomId) // kill the timer if existing
-    }
+    }*/
+   this.startTimer(chatroomId)
+  }
+
+  pauseTimer(chatroomId: string): void {
+    this.killTimer(chatroomId)
   }
 
   /**
