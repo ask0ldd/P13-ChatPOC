@@ -16,7 +16,8 @@
         (callSwitchConversation)="switchConversation($event)"
         (callCloseConversation)="closeConversation($event)"
     ></app-assisted-customers-list>
-    <div style="width: 100%; margin-bottom: 2rem;" *ngFor="let message of activeConversation">
+    <div class="assistYouSoonContainer" *ngIf="currentRole == 'CUSTOMER'">A member of our support team will assist you soon.</div>
+    <div style="width: 100%;" *ngFor="let message of activeConversation">
         <app-message *ngIf="message.type == 'CHAT'" [message]="message"></app-message>
         <app-joining-alert *ngIf="message.type == 'JOIN' && currentRole == 'CUSTOMER'"></app-joining-alert>
     </div>

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.util.List;
 
+// @MappedSuperclass
 @Entity(name = "sessions")
 @Getter
 @Setter

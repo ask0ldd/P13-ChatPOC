@@ -17,6 +17,7 @@ main {
   display: flex;
   column-gap: 1rem;
   width: 100%;
+  margin-top: 2rem;
 }
 
 textarea {
@@ -52,4 +53,14 @@ textarea {
   background-color: #f0f0f0;
   border: 1px solid #d0d0d0;
   border-radius: 4px;
+}
+
+.assistYouSoonContainer {
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background-color: rgb(123, 228, 222);
+  border: 1px solid rgb(91, 173, 169);
 }

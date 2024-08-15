@@ -1,7 +1,7 @@
 .messageContainer {
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid #555555;
+  border-bottom: 1px dotted #818181;
   padding: 1rem 0.75rem;
 }
 
