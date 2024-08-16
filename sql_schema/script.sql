@@ -9,12 +9,9 @@ CREATE TABLE Users (
     role ENUM("ADMIN", "SUPPORT", "CUSTOMER"),
     chatroom_id VARCHAR(255) NOT NULL,
     birthdate DATE,
-    street_address VARCHAR(255),
-    city VARCHAR(100),
-    state VARCHAR(100),
-    zip_code VARCHAR(20),
-    country VARCHAR(100),
+    address_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    FOREIGN KEY (address_id) REFERENCES Addresses(address_id)
 );
 
 CREATE TABLE CarMakes (
@@ -37,9 +34,7 @@ CREATE TABLE CarModels (
 
 CREATE TABLE CarPictures (
     picture_id INT AUTO_INCREMENT PRIMARY KEY,
-    model_id INT NOT NULL,
     url VARCHAR(50) NOT NULL,
-    FOREIGN KEY (model_id) REFERENCES CarModels(model_id)
 );
 
 CREATE TABLE Cars (
@@ -51,6 +46,14 @@ CREATE TABLE Cars (
     daily_rate DECIMAL(10, 2) NOT NULL,
     available BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (model_id) REFERENCES CarModels(model_id)
+);
+
+CarPictures_Cars_Junction(
+    junction_id INT AUTO_INCREMENT PRIMARY KEY,
+    picture_id INT,
+    car_id INT,
+    FOREIGN KEY (picture_id) REFERENCES CarPictures(picture_id)
+    FOREIGN KEY (car_id) REFERENCES Cars(car_id)
 );
 
 CREATE TABLE Rentals (
@@ -74,12 +77,19 @@ CREATE TABLE Rentals (
 CREATE TABLE RentalOffices (
     rentaloffice_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
-    city VARCHAR(50) NOT NULL,
-    address VARCHAR(100) NOT NULL,
-    postal_code VARCHAR(20) NOT NULL,
+    address_id INT,
     phone_number VARCHAR(20),
     email VARCHAR(50),
     opening_hours VARCHAR(100)
+    FOREIGN KEY (address_id) REFERENCES Addresses(address_id)
+);
+
+CREATE TABLE Addresses(
+    address_id INT AUTO_INCREMENT PRIMARY KEY,
+    street_address VARCHAR(255),
+    city VARCHAR(100),
+    postal_code VARCHAR(20) NOT NULL,
+    country VARCHAR(100),
 );
 
 CREATE TABLE ChatMessages (
