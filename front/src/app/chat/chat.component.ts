@@ -138,6 +138,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     })
   }
 
+  disconnect(){
+    this.assistedCustomersService.list$.pipe(take(1)).subscribe(users => users.forEach(user =>  this.closeConversation(user))).unsubscribe()
+    this.ngOnDestroy()
+  }
+
   /**
    * Closes the active conversation for the specified customer.
    * 
