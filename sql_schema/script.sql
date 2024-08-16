@@ -1,3 +1,11 @@
+CREATE TABLE Addresses(
+    address_id INT AUTO_INCREMENT PRIMARY KEY,
+    street_address VARCHAR(255) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    postal_code VARCHAR(20) NOT NULL,
+    country VARCHAR(100) NOT NULL
+);
+
 CREATE TABLE Users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
@@ -5,13 +13,19 @@ CREATE TABLE Users (
     firstname VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
-    phone_number VARCHAR(15),
-    role ENUM("ADMIN", "SUPPORT", "CUSTOMER"),
-    chatroom_id VARCHAR(255) NOT NULL,
-    birthdate DATE,
-    address_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    phone_number VARCHAR(20),
+    role ENUM('ADMIN', 'SUPPORT', 'CUSTOMER') DEFAULT 'CUSTOMER',
+    birthdate DATE NOT NULL,
+    address_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (address_id) REFERENCES Addresses(address_id)
+);
+
+CREATE TABLE Chatrooms (
+    chatroom_id INT AUTO_INCREMENT PRIMARY KEY,
+    owner_id INT NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    FOREIGN KEY (owner_id) REFERENCES Users(user_id)
 );
 
 CREATE TABLE CarMakes (
@@ -22,7 +36,7 @@ CREATE TABLE CarMakes (
 
 CREATE TABLE CarModels (
     model_id INT AUTO_INCREMENT PRIMARY KEY,
-    make_id INT,
+    make_id INT NOT NULL,
     model VARCHAR(50) NOT NULL,
     description VARCHAR(100) NOT NULL,
     acriss_category CHAR(1) NOT NULL,
@@ -34,12 +48,12 @@ CREATE TABLE CarModels (
 
 CREATE TABLE CarPictures (
     picture_id INT AUTO_INCREMENT PRIMARY KEY,
-    url VARCHAR(50) NOT NULL,
+    url VARCHAR(255) NOT NULL UNIQUE
 );
 
 CREATE TABLE Cars (
     car_id INT AUTO_INCREMENT PRIMARY KEY,
-    model_id INT,
+    model_id INT NOT NULL,
     year INT NOT NULL,
     color VARCHAR(50) NOT NULL,
     registration_number VARCHAR(20) NOT NULL UNIQUE,
@@ -48,58 +62,74 @@ CREATE TABLE Cars (
     FOREIGN KEY (model_id) REFERENCES CarModels(model_id)
 );
 
-CarPictures_Cars_Junction(
+CREATE TABLE CarPictureCarJunction(
     junction_id INT AUTO_INCREMENT PRIMARY KEY,
-    picture_id INT,
-    car_id INT,
-    FOREIGN KEY (picture_id) REFERENCES CarPictures(picture_id)
+    picture_id INT NOT NULL,
+    car_id INT NOT NULL,
+    FOREIGN KEY (picture_id) REFERENCES CarPictures(picture_id),
     FOREIGN KEY (car_id) REFERENCES Cars(car_id)
+);
+
+CREATE TABLE RentalOffices (
+    rentaloffice_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    address_id INT NOT NULL,
+    phone_number VARCHAR(20) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    opening_hours VARCHAR(100),
+    FOREIGN KEY (address_id) REFERENCES Addresses(address_id)
+);
+
+CREATE TABLE Pickups (
+    pickup_id INT AUTO_INCREMENT PRIMARY KEY,
+    /*rental_id INT NOT NULL,*/
+    rentaloffice_id INT NOT NULL,
+    date DATE NOT NULL,
+    /*FOREIGN KEY (rental_id) REFERENCES Rentals(rental_id),*/
+    FOREIGN KEY (rentaloffice_id) REFERENCES RentalOffices(rentaloffice_id)
+);
+
+CREATE TABLE Dropoffs (
+    dropoff_id INT AUTO_INCREMENT PRIMARY KEY,
+    /*rental_id INT NOT NULL,*/
+    rentaloffice_id INT NOT NULL,
+    date DATE NOT NULL,
+    /*FOREIGN KEY (rental_id) REFERENCES Rentals(rental_id),*/
+    FOREIGN KEY (rentaloffice_id) REFERENCES RentalOffices(rentaloffice_id)
 );
 
 CREATE TABLE Rentals (
     rental_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     car_id INT NOT NULL,
-    pickup_office_id INT NOT NULL,
-    dropoff_office_id INT NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
+    pickup_id INT NOT NULL,
+    dropoff_id INT NOT NULL,
     total_cost DECIMAL(10, 2) NOT NULL,
     status ENUM('reserved', 'in_progress', 'completed', 'canceled') DEFAULT 'reserved',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
-    FOREIGN KEY (car_id) REFERENCES Cars(car_id),
-    FOREIGN KEY (pickup_office_id) REFERENCES RentalOffices(rentaloffice_id),
-    FOREIGN KEY (dropoff_office_id) REFERENCES RentalOffices(rentaloffice_id)
+    FOREIGN KEY (car_id) REFERENCES Cars(car_id)
+    FOREIGN KEY (pickup_id) REFERENCES Pickups(pickup_id)
+    FOREIGN KEY (dropoff_id) REFERENCES Dropoffs(dropoff_id)
 );
 
-CREATE TABLE RentalOffices (
-    rentaloffice_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    address_id INT,
-    phone_number VARCHAR(20),
-    email VARCHAR(50),
-    opening_hours VARCHAR(100)
-    FOREIGN KEY (address_id) REFERENCES Addresses(address_id)
-);
+/*ALTER TABLE Rentals
+ADD CONSTRAINT fk_rental_dropoff
+FOREIGN KEY (dropoff_id) REFERENCES Dropoffs(dropoff_id);
 
-CREATE TABLE Addresses(
-    address_id INT AUTO_INCREMENT PRIMARY KEY,
-    street_address VARCHAR(255),
-    city VARCHAR(100),
-    postal_code VARCHAR(20) NOT NULL,
-    country VARCHAR(100),
-);
+ALTER TABLE Rentals
+ADD CONSTRAINT fk_rental_pickup
+FOREIGN KEY (pickup_id) REFERENCES Pickups(pickup_id);*/
 
 CREATE TABLE ChatMessages (
     chatmessage_id INT AUTO_INCREMENT PRIMARY KEY,
-    chatroom_id VARCHAR(255) NOT NULL,
+    chatroom_id INT NOT NULL,
     sender_id INT NOT NULL,
     content TEXT NOT NULL,
-    type ENUM("CHAT", "JOIN", "LEAVE"),
+    type ENUM('CHAT', 'JOIN', 'LEAVE'),
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (chatroom_id) REFERENCES Users(chatroom_id),
+    FOREIGN KEY (chatroom_id) REFERENCES Chatrooms(chatroom_id),
     FOREIGN KEY (sender_id) REFERENCES Users(user_id)
 );
 
@@ -109,9 +139,9 @@ CREATE TABLE Messages (
     receiver_id INT NOT NULL,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
-    attacheddoc_url TEXT NOT NULL,
+    attacheddoc_url VARCHAR(255),
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (sender_id) REFERENCES Users(user_id)
+    FOREIGN KEY (sender_id) REFERENCES Users(user_id),
     FOREIGN KEY (receiver_id) REFERENCES Users(user_id)
 );
 
