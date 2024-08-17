@@ -74,43 +74,43 @@ public class ChatController {
     }
 
     // private rooms
-    @MessageMapping("/chat/sendMessage/{chatRoomId}")
-    @SendTo("/queue/{chatRoomId}")
-    public ChatMessageResponseDto sendPrivateMessage(@DestinationVariable String chatRoomId, @Payload MessageDto message) {
+    @MessageMapping("/chat/sendMessage/{chatroomName}")
+    @SendTo("/queue/{chatroomName}")
+    public ChatMessageResponseDto sendPrivateMessage(@DestinationVariable String chatroomName, @Payload MessageDto message) {
         System.out.println("message : " + message.getContent());
-        ChatMessage chatMessage = messageService.saveMessage(chatRoomId, message);
+        ChatMessage chatMessage = messageService.saveMessage(chatroomName, message);
         return ChatMessageResponseDto.builder()
                 .type(message.getType())
                 .content(message.getContent())
                 .sender(message.getSender())
-                .chatroomId(chatRoomId)
+                .chatroomName(chatroomName)
                 .sentAt(LocalDateTime.now())
                 .build();
     }
 
     // private rooms
-    @MessageMapping("/chat/addUser/{chatRoomId}") // entering
-    @SendTo("/queue/{chatRoomId}") // dispatched to
-    public ChatMessageResponseDto addPrivateUser(@DestinationVariable String chatRoomId, @Payload MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
+    @MessageMapping("/chat/addUser/{chatroomName}") // entering
+    @SendTo("/queue/{chatroomName}") // dispatched to
+    public ChatMessageResponseDto addPrivateUser(@DestinationVariable String chatroomName, @Payload MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
         // add username and roomId to websocket session
         headerAccessor.getSessionAttributes().put("username", message.getSender());
-        headerAccessor.getSessionAttributes().put("roomId", chatRoomId);
+        headerAccessor.getSessionAttributes().put("roomId", chatroomName);
         String sender = message.getSender();
         User user = userRepository.findByUsername(sender).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
-        System.out.println("User connected : " + sender + " to room: " + chatRoomId);
+        System.out.println("User connected : " + sender + " to room: " + chatroomName);
         return ChatMessageResponseDto.builder()
                 .type(message.getType())
                 .content(sender + " connected.")
                 .sender(sender)
-                .chatroomId(chatRoomId)
+                .chatroomName(chatroomName)
                 .sentAt(LocalDateTime.now())
                 .build();
     }
 
-    @GetMapping("/api/history/{chatroomId}")
+    @GetMapping("/api/history/{chatroomName}")
     @ResponseBody
-    public ChatRoomHistoryResponseDto getHistory(@PathVariable final String chatroomId){
-        ChatRoomHistory chatroomHistory = chatRoomHistoryService.getHistory(chatroomId);
+    public ChatRoomHistoryResponseDto getHistory(@PathVariable final String chatroomName){
+        ChatRoomHistory chatroomHistory = chatRoomHistoryService.getHistory(chatroomName);
         return new ChatRoomHistoryResponseDto(chatroomHistory);
     }
 }

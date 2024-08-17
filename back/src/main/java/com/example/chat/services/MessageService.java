@@ -1,6 +1,7 @@
 package com.example.chat.services;
 
 import com.example.chat.dtos.payloads.MessageDto;
+import com.example.chat.exceptions.HistoryNotFoundException;
 import com.example.chat.exceptions.UserNotFoundException;
 import com.example.chat.models.ChatMessage;
 import com.example.chat.models.ChatRoomHistory;
@@ -24,11 +25,13 @@ public class MessageService implements IMessageService {
         this.userRepository = userRepository;
     }
 
-    public ChatMessage saveMessage(String chatRoomId, MessageDto receivedMessage){
-        User chatroomOwner = userRepository.findByChatRoomId(chatRoomId).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+    public ChatMessage saveMessage(String chatroomName, MessageDto receivedMessage){
+        // User chatroomOwner = userRepository.findByChatRoomId(chatRoomId).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+        // ChatRoomHistory chatroom = chatRoomHistoryRepository.findByName(chatRoomName).orElseThrow(() -> new HistoryNotFoundException("Target user cannot be found."));
         User sender = userRepository.findByUsername(receivedMessage.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
-        ChatRoomHistory chatroom = chatRoomHistoryRepository.findByOwner(chatroomOwner)
-                .orElseGet(() -> ChatRoomHistory.builder().owner(chatroomOwner).build());
+        /*ChatRoomHistory chatroom = chatRoomHistoryRepository.findByOwner(chatroomOwner)
+                .orElseGet(() -> ChatRoomHistory.builder().owner(chatroomOwner).build());*/
+        ChatRoomHistory chatroom = chatRoomHistoryRepository.findByName(chatroomName).orElseThrow(() -> new HistoryNotFoundException("Target user cannot be found."));
         ChatRoomHistory newChatRoom = chatRoomHistoryRepository.save(chatroom);
         ChatMessage chatMessage = ChatMessage.builder()
                 .sender(sender)
