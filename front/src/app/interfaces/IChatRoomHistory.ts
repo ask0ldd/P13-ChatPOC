@@ -3,7 +3,7 @@ import { IChatMessage } from "./IChatMessage";
 
 export interface IChatRoomHistory{
     id : number
-    name : string
+    chatroomName : string
     owner : IUser
     messages : IChatMessage[]
 }

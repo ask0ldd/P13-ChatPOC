@@ -12,7 +12,7 @@ export class AuthService {
   loggedUser : IUser = {
     username: "",
     role: "CUSTOMER",
-    chatroomId: "",
+    chatroomName: "",
     id: 0,
     email: ""
   }
@@ -57,8 +57,8 @@ export class AuthService {
    * Gets the private chatroom ID of the currently logged-in user.
    * @returns {string} The private chatroom ID of the logged-in user.
    */
-  getLoggedUserPrivateRoomId(){
-    return this.loggedUser.chatroomId
+  getLoggedUserPrivateRoomName(){
+    return this.loggedUser.chatroomName
   }
 
   /**

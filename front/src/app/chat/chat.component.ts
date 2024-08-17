@@ -29,7 +29,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   currentRole! : TUserRole
 
   activeCustomer : IUser | null = null
-  activeRoomId = ""
+  activeRoomName = ""
   activeConversation : IChatMessage[] = []
 
   constructor(
@@ -52,16 +52,16 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.router.navigate(['/']) 
     } 
     else {
-      this.activeRoomId = this.authService.getLoggedUserPrivateRoomId()
+      this.activeRoomName = this.authService.getLoggedUserPrivateRoomName()
       // by default, the user is connected to its own private chatroom
-      this.chatService.initChatClient(this.receivedMessageCallback, this.activeRoomId)
+      this.chatService.initChatClient(this.receivedMessageCallback, this.activeRoomName)
       this.currentRole = this.authService.getLoggedUserRole()
       // if the user is an admin, retrieve the queue and autorefresh it every x secs
       if(this.currentRole == "ADMIN") {
         this.queueService.startPolling()
       }
       // retrieve the history for the current chatroom
-      this.conversationSubscription = this.chatService.fetchHistory$(this.activeRoomId).pipe(take(1)).subscribe({
+      this.conversationSubscription = this.chatService.fetchHistory$(this.activeRoomName).pipe(take(1)).subscribe({
         next : (chatRoomHistory) => this.activeConversation = chatRoomHistory.messages,
         error : () => this.activeConversation = []
       })
@@ -79,9 +79,9 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     if(destinationRoomEndpoint == null || parsedMessage == null) return
 
-    const destinationRoomId = destinationRoomEndpoint.split('/')[destinationRoomEndpoint.split('/').length-1]
+    const destinationRoomName = destinationRoomEndpoint.split('/')[destinationRoomEndpoint.split('/').length-1]
     // message is displayed only if it targets the active chatroom
-    if(this.activeRoomId == destinationRoomId) {
+    if(this.activeRoomName == destinationRoomName) {
       this.activeConversation.push(parsedMessage)
       // this.resetInactivityTimer()
       return
@@ -89,7 +89,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     if(this.authService.getLoggedUserRole() != "ADMIN") return
     // if the logged user is an admin receiving a message from a inactive subscribed chatrom
-    this.chatNotificationsService.pushNotification(destinationRoomId)
+    this.chatNotificationsService.pushNotification(destinationRoomName)
   }
 
   /**
@@ -98,10 +98,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   sendMessage(){
     // if the user is an admin with a customer being assigned, send the message to the assigned customer's room
     if(this.currentRole == "ADMIN" && this.activeCustomer != null) {
-      this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.activeCustomer.chatroomId)
+      this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.activeCustomer.chatroomName)
     } else {
       // in all the other cases, send the message to the logged user's room
-      this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.authService.getLoggedUserPrivateRoomId())
+      this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.authService.getLoggedUserPrivateRoomName())
     }
     this.messageTextarea.nativeElement.value = ""
     // this.resetInactivityTimer()
@@ -129,10 +129,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   switchConversation(customer : IUser){
     console.log("switchConvCustomer : " + JSON.stringify(customer))
     this.activeCustomer = customer
-    this.activeRoomId = customer.chatroomId
+    this.activeRoomName = customer.chatroomName
     if(this.conversationSubscription) this.conversationSubscription.unsubscribe()
-    console.log("roomId : " + this.activeRoomId)
-    this.conversationSubscription = this.chatService.fetchHistory$(this.activeRoomId).pipe(take(1)).subscribe({
+    console.log("roomId : " + this.activeRoomName)
+    this.conversationSubscription = this.chatService.fetchHistory$(this.activeRoomName).pipe(take(1)).subscribe({
       next : (chatRoomHistory) => this.activeConversation = chatRoomHistory.messages,
       error : () => this.activeConversation = []
     })

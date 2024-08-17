@@ -20,7 +20,7 @@ export class ChatService {
   private stompClient! : CompatClient
   private subs : StompSubscription[] = []
 
-  private activeConversationsSubs : Set<{chatroomId : string, sub : StompSubscription}> = new Set<{chatroomId : string, sub : StompSubscription}>()
+  private activeConversationsSubs : Set<{chatroomName : string, sub : StompSubscription}> = new Set<{chatroomName : string, sub : StompSubscription}>()
 
   /**
    * @constructor
@@ -61,10 +61,10 @@ export class ChatService {
    */
   initNewConversation(callback : (message : IMessage) => void, customer : IUser){
     if (this.stompClient) {
-      this.sendMessage("JOIN", "An admin is here to help you.", customer.chatroomId)
-      const sub = this.subscribe(callback, customer.chatroomId) // array should be [{chatroomId : '', sub : sub}, ...]
+      this.sendMessage("JOIN", "An admin is here to help you.", customer.chatroomName)
+      const sub = this.subscribe(callback, customer.chatroomName) // array should be [{chatroomId : '', sub : sub}, ...]
       // used later to unsub when closing a conversation
-      if(sub != null) this.activeConversationsSubs.add({chatroomId: customer.chatroomId, sub: sub})
+      if(sub != null) this.activeConversationsSubs.add({chatroomName: customer.chatroomName, sub: sub})
     } else {
       console.error("StompClient should be initialized first.")
     }
@@ -74,11 +74,11 @@ export class ChatService {
    * @method subscribe
    * @description Subscribes to a chatroom.
    * @param {function} callback - Callback function to handle incoming messages.
-   * @param {string} chatroomId - ID of the chatroom to subscribe to.
+   * @param {string} chatroomName - ID of the chatroom to subscribe to.
    */
-  subscribe(callback : messageCallbackType, chatroomId : string) : StompSubscription | void {
+  subscribe(callback : messageCallbackType, chatroomName : string) : StompSubscription | void {
     if (this.stompClient) {
-      const privateRoom = chatroomId == null ? '/queue/' + this.authService.getLoggedUserPrivateRoomId() : '/queue/' + chatroomId
+      const privateRoom = chatroomName == null ? '/queue/' + this.authService.getLoggedUserPrivateRoomName() : '/queue/' + chatroomName
       const sub = this.stompClient.subscribe(privateRoom, callback);
       this.subs.push(sub)
       return sub
@@ -90,22 +90,22 @@ export class ChatService {
    * @description Sends a message to a chatroom.
    * @param {TMessageType} messageType - Type of the message (CHAT or JOIN).
    * @param {string} message - Content of the message.
-   * @param {string} privateRoomId - ID of the private room to send the message to.
+   * @param {string} privateRoomName - ID of the private room to send the message to.
    */
-  sendMessage(messageType : TMessageType, message : string, privateRoomId : string){ 
+  sendMessage(messageType : TMessageType, message : string, privateRoomName : string){ 
     if (this.stompClient) {
       // message is sent to the public endpoint by default
       let endpoint = messageType == "CHAT" ? '/ws/chat.sendMessage' : '/ws/chat.addUser'
 
       if(messageType == "CHAT") {
         // endpoint replaced by a private one if necessary
-        if(privateRoomId) endpoint = '/ws/chat/sendMessage/' + privateRoomId
+        if(privateRoomName) endpoint = '/ws/chat/sendMessage/' + privateRoomName
         this.stompClient.send(endpoint, {}, JSON.stringify({ content: message, sender: this.authService.getLoggedUserName(), type : "CHAT" }))
       }
 
       if(messageType == "JOIN") {
         // endpoint replaced by a private one if necessary
-        if(privateRoomId) endpoint = '/ws/chat/addUser/' + privateRoomId
+        if(privateRoomName) endpoint = '/ws/chat/addUser/' + privateRoomName
         const username = this.authService.getLoggedUserName()
         this.stompClient.send(endpoint, {}, JSON.stringify({ content: username, sender: username, type : "JOIN"}))
       }
@@ -117,11 +117,11 @@ export class ChatService {
   /**
    * @method fetchHistory$
    * @description Fetches the chat history for a specific chatroom.
-   * @param {string} chatroomId - ID of the chatroom to fetch history for.
+   * @param {string} chatroomName - ID of the chatroom to fetch history for.
    * @returns {Observable<IChatRoomHistory>} Observable of the chat room history.
    */
-  fetchHistory$(chatroomId : string) : Observable<IChatRoomHistory>{
-    return this.httpClient.get<IChatRoomHistory>(`api/history/${chatroomId}`)
+  fetchHistory$(chatroomName : string) : Observable<IChatRoomHistory>{
+    return this.httpClient.get<IChatRoomHistory>(`api/history/${chatroomName}`)
   }
 
   /**
@@ -129,7 +129,7 @@ export class ChatService {
    * @param {IUser} customer - User object representing the customer whose conversation is to be closed.
    */
   closeConversation(customer : IUser){
-    const foundConversation = Array.from(this.activeConversationsSubs).find(item => item.chatroomId == customer.chatroomId)
+    const foundConversation = Array.from(this.activeConversationsSubs).find(item => item.chatroomName == customer.chatroomName)
     if(foundConversation){
       foundConversation?.sub.unsubscribe()
       this.activeConversationsSubs.delete(foundConversation)
