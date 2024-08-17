@@ -1,1 +1,1 @@
-export type TUserRole = "ADMIN" | "CUSTOMER"
+export type TUserRole = "ADMIN" | "CUSTOMER" | "SUPPORT"
