@@ -23,9 +23,11 @@ public class User {
     private Long id;
 
     // time + user.id
-    @NonNull
+    /*@NonNull
     @Column(name = "chatroom_id", unique = true)
-    private String chatRoomId;
+    private String chatRoomId;*/
+    @OneToOne(mappedBy = "owner")
+    private ChatRoomHistory chatroom;
 
     @NonNull
     @Column(name = "username", unique = true)

@@ -1,12 +1,13 @@
 package com.example.chat.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import jakarta.persistence.*;
 
 import java.util.List;
 
 // @MappedSuperclass
-@Entity(name = "sessions")
+@Entity(name = "chatrooms")
 @Getter
 @Setter
 @Data
@@ -19,10 +20,14 @@ public class ChatRoomHistory {
     @Column(name = "id")
     private Long id;
 
+    @NonNull
+    private String name;
+
     @OneToMany(mappedBy = "chatroom")
     private List<ChatMessage> chatMessages;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JsonManagedReference
     private User owner;
 }
