@@ -47,6 +47,16 @@ CREATE TABLE CarModels (
     FOREIGN KEY (make_id) REFERENCES CarMakes(make_id)
 );
 
+CREATE TABLE Reviews (
+    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    model_id INT NOT NULL,
+    user_id INT NOT NULL,
+    score INT NOT NULL CHECK (score BETWEEN 1 AND 10),
+    text VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (rental_id) REFERENCES Rentals(rental_id)
+);
+
 CREATE TABLE CarPictures (
     picture_id INT AUTO_INCREMENT PRIMARY KEY,
     url VARCHAR(255) NOT NULL UNIQUE
