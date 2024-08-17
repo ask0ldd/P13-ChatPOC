@@ -30,16 +30,16 @@ public class WebSocketEventListener {
     public void handleDisconnect(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String username = (String) headerAccessor.getSessionAttributes().get("username"); // !!! needs to be fixed since value not found
-        String roomId = (String) headerAccessor.getSessionAttributes().get("roomId");
+        String roomname = (String) headerAccessor.getSessionAttributes().get("roomname");
         System.out.println("User disconnected : " + username);
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         var message = ChatMessageResponseDto.builder()
                 .type(MessageType.LEAVE)
                 .content(username + " leaved.")
                 .sender(username)
-                .chatroomId(roomId)
+                .chatroomName(roomname)
                 .sentAt(LocalDateTime.now())
                 .build();
-        messageTemplate.convertAndSend("/queue/" + roomId, message);
+        messageTemplate.convertAndSend("/queue/" + roomname, message);
     }
 }

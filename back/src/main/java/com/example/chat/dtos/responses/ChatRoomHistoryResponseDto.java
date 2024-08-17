@@ -15,6 +15,7 @@ import java.util.List;
 public class ChatRoomHistoryResponseDto {
     private Long id;
     private User owner;
+    private String chatroomName;
     private List<LimitedMessage> messages;
 
     public ChatRoomHistoryResponseDto(ChatRoomHistory chatRoom){

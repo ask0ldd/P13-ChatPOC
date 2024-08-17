@@ -13,6 +13,21 @@ public class ChatMessageResponseDto {
     private String content;
     private String sender;
     private MessageType type;
-    private String chatroomId;
+    private String chatroomName;
     private LocalDateTime sentAt;
 }
+
+/*
+
+    private String content;
+    private String sender;
+    private String chatroomName;
+    private MessageType type;
+
+    public MessageDto(ChatMessage message){
+        this.content = message.getContent();
+        this.sender = message.getSender().getUsername();
+        this.type = message.getType();
+        this.chatroomName = message.getChatroom().getName();
+    }
+ */

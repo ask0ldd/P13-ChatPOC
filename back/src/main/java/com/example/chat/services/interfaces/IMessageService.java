@@ -4,5 +4,5 @@ import com.example.chat.dtos.payloads.MessageDto;
 import com.example.chat.models.ChatMessage;
 
 public interface IMessageService {
-    public ChatMessage saveMessage(String chatRoomId, MessageDto receivedMessage);
+    public ChatMessage saveMessage(String chatroomName, MessageDto receivedMessage);
 }

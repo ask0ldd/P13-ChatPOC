@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface ChatRoomHistoryRepository extends JpaRepository<ChatRoomHistory, Long> {
     Optional<ChatRoomHistory> findByOwner(User user);
+    Optional<ChatRoomHistory> findByName(String name);
 }
