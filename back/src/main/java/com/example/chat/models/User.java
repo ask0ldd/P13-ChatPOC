@@ -1,5 +1,7 @@
 package com.example.chat.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,11 +25,13 @@ public class User {
     private Long id;
 
     // time + user.id
-    /*@NonNull
-    @Column(name = "chatroom_id", unique = true)
-    private String chatRoomId;*/
     @OneToOne(mappedBy = "owner")
+    @JsonBackReference
     private ChatRoomHistory chatroom;
+
+    public String getChatroomName() {
+        return chatroom != null ? chatroom.getName() : null;
+    }
 
     @NonNull
     @Column(name = "username", unique = true)
@@ -38,6 +42,7 @@ public class User {
 
     @NonNull
     @Column(name = "password")
+    @JsonIgnore
     private String password;
 
     @NonNull
