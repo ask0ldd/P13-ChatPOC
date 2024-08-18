@@ -1,5 +1,6 @@
 package com.example.chat.services;
 
+import com.example.chat.dtos.projections.UserProjectionDto;
 import com.example.chat.exceptions.UserNotFoundException;
 import com.example.chat.models.User;
 import com.example.chat.repositories.UserRepository;
@@ -17,5 +18,10 @@ public class UserService implements IUserService {
 
     public User getUser(String username){
         return this.userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+    }
+
+    public UserProjectionDto getUserProjection(String username){
+        User user = this.userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
+        return new UserProjectionDto(user);
     }
 }

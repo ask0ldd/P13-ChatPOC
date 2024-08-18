@@ -2,6 +2,7 @@ package com.example.chat.controllers;
 
 import com.example.chat.dtos.payloads.DisconnectRequestDto;
 import com.example.chat.dtos.payloads.LoginRequestDto;
+import com.example.chat.dtos.projections.UserProjectionDto;
 import com.example.chat.dtos.responses.UserResponseDto;
 import com.example.chat.models.User;
 import com.example.chat.services.QueueService;
@@ -26,14 +27,15 @@ public class AuthController {
 
     @PostMapping("auth/login")
     public ResponseEntity<UserResponseDto> login(@RequestBody LoginRequestDto loginRequest) {
-        User user = userService.getUser(loginRequest.getUsername());
+        UserProjectionDto user = userService.getUserProjection(loginRequest.getUsername());
         if(user.getRole().equals("CUSTOMER")) queueService.addUser(user);
         return ResponseEntity.ok().body(new UserResponseDto(user));
     }
 
     @PostMapping("auth/disconnect")
     public ResponseEntity<?> disconnect(@RequestBody DisconnectRequestDto disconnectRequest) {
-        User user = userService.getUser(disconnectRequest.getUsername());
+        // User user = userService.getUser(disconnectRequest.getUsername());
+        UserProjectionDto user = userService.getUserProjection(disconnectRequest.getUsername());
         queueService.removeUser(user);
         return ResponseEntity.ok().build();
     }

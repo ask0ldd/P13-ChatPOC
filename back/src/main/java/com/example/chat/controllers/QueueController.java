@@ -2,6 +2,7 @@ package com.example.chat.controllers;
 
 import com.example.chat.dtos.payloads.LoginRequestDto;
 import com.example.chat.dtos.payloads.RemoveUserFromQueueRequestDto;
+import com.example.chat.dtos.projections.UserProjectionDto;
 import com.example.chat.dtos.responses.UserResponseDto;
 import com.example.chat.models.User;
 import com.example.chat.services.QueueService;
@@ -30,7 +31,7 @@ public class QueueController {
 
     @PostMapping("queue/remove")
     public ResponseEntity<List<UserResponseDto>> removeUserFromQueue(@RequestBody RemoveUserFromQueueRequestDto removeRequest) {
-        Set<User> queue = queueService.removeUser(removeRequest.getUsername());
+        Set<UserProjectionDto> queue = queueService.removeUser(removeRequest.getUsername());
         List<UserResponseDto> queueDto = queue.stream().map(UserResponseDto::new).toList();
         return ResponseEntity.ok().body(queueDto);
     }
