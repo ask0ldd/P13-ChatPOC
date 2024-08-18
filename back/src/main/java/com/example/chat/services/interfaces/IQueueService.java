@@ -1,15 +1,17 @@
 package com.example.chat.services.interfaces;
 
+import com.example.chat.dtos.projections.UserProjectionDto;
 import com.example.chat.models.User;
 
 import java.util.Set;
 
 public interface IQueueService {
-    public Set<User> getUsers();
 
-    public Set<User> addUser(User user);
+    public Set<UserProjectionDto> getUsers();
 
-    public Set<User> removeUser(User user);
+    public Set<UserProjectionDto> addUser(UserProjectionDto user);
 
-    public Set<User> removeUser(String username);
+    public Set<UserProjectionDto> removeUser(UserProjectionDto user);
+
+    public Set<UserProjectionDto> removeUser(String username);
 }
