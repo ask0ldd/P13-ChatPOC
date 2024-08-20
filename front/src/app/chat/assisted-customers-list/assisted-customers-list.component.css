@@ -23,7 +23,7 @@
   cursor: pointer;
   background-color: #2292ee;
   border-radius: 6px 6px 0 0;
-  box-shadow: 0 4px 8px #2292ee22;
+  /*box-shadow: 0 4px 8px #2292ee22;*/
   font-weight: 600;
   color: #fff;
   overflow: hidden;
@@ -39,7 +39,7 @@
   cursor: pointer;
   /*background-color: #fff;*/
   border-radius: 6px 6px 0 0;
-  box-shadow: 0 4px 8px #2292ee22;
+  /*box-shadow: 0 4px 8px #2292ee22;*/
   font-weight: 600;
   column-gap: 1.5rem;
   overflow: hidden;

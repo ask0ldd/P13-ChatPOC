@@ -1,3 +1,7 @@
+:host {
+  width: 100%;
+}
+
 .alertContainer {
   padding: 1rem 0.75rem;
   display: flex;
