@@ -21,11 +21,11 @@ export class QueueService {
   /**
    * @public
    * @method startPolling
-   * @description Starts polling the queue every 15 seconds and updates the queue$ BehaviorSubject.
+   * @description Starts polling the queue every 8 seconds and updates the queue$ BehaviorSubject.
    * @returns {void}
    */
   startPolling() : void {
-    timer(0, 15000) // Poll every 15 seconds
+    timer(0, 8000)
       .pipe(
         switchMap(() => this.fetchQueue()),
         shareReplay(1)
