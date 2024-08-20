@@ -18,9 +18,11 @@
         (callCloseConversation)="closeConversation($event)"
     ></app-assisted-customers-list>
     <div class="assistYouSoonContainer" *ngIf="currentRole == 'CUSTOMER'">A member of our support team will assist you soon.</div>
-    <div style="width: 100%;" *ngFor="let message of activeConversation">
-        <app-message *ngIf="message.type == 'CHAT'" [message]="message"></app-message>
-        <app-joining-alert *ngIf="message.type == 'JOIN' && currentRole == 'CUSTOMER'"></app-joining-alert>
+    <div class="conversationContainer" [style]="currentRole == 'CUSTOMER'? 'border-radius: 6px;' : 'border-radius: 0 6px 6px 6px;' ">
+        <div style="display:flex; width: 100%;" *ngFor="let message of activeConversation">
+            <app-message *ngIf="message.type == 'CHAT'" [message]="message"></app-message>
+            <app-joining-alert *ngIf="message.type == 'JOIN' && currentRole == 'CUSTOMER'"></app-joining-alert>
+        </div>
     </div>
     <div class="newMessageContainer">
         <textarea style="resize:none" placeholder="Écrivez ici votre message" #messageTextarea></textarea>

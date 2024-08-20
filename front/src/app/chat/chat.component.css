@@ -63,4 +63,16 @@ textarea {
   width: 100%;
   background-color: rgb(123, 228, 222);
   border: 1px solid rgb(91, 173, 169);
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+}
+
+.conversationContainer {
+  display: flex;
+  width: 100%;
+  border: 2px solid #2292ee;
+  box-sizing: border-box;
+  flex-direction: column;
+  box-shadow: 0 4px 8px #2292ee44;
 }
