@@ -10,6 +10,7 @@ import { IUser } from '../interfaces/IUser';
 import { TUserRole } from '../types/TUserRole';
 import { AssistedCustomersService } from '../services/assisted-customers.service';
 import { ChatNotificationsService } from '../services/chat-notifications.service';
+import { AssistedCustomersListComponent } from './assisted-customers-list/assisted-customers-list.component';
 
 @Component({
   selector: 'app-chat',
@@ -17,6 +18,8 @@ import { ChatNotificationsService } from '../services/chat-notifications.service
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit, OnDestroy {
+
+  // @ViewChild(AssistedCustomersListComponent) assistedCustomersListComponent!: AssistedCustomersListComponent;
 
   @ViewChild('messageTextarea')
   messageTextarea!: ElementRef;

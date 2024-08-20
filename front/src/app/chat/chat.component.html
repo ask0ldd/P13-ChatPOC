@@ -1,11 +1,5 @@
 <main class="chatMain">
-    <div (click)="disconnect()">Logout</div>
-    <!--<div *ngIf="currentRole == 'ADMIN'" id="queue" class="customerList">
-        <div class="customerListTitle">En attente de support :  </div>
-        <div class="customerButton" *ngFor="let user of queue; let i = index" (click)="assignNewCustomerToAdmin(user)">
-            {{user.username}}
-        </div>
-    </div>-->
+    <button style="margin-bottom: 1rem; margin-left: auto;" (click)="disconnect()">Logout</button>
     <app-queue-list 
         *ngIf="currentRole == 'ADMIN'" id="queue"
         [queue]="queue"
