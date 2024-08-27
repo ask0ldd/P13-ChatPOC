@@ -57,7 +57,14 @@ public class ChatController {
                 .build();
     }
 
-    // public room
+    /**
+     * Adds a user to a public chat room.
+     *
+     * @param message The message containing user information.
+     * @param headerAccessor The header accessor for the message.
+     * @return A ChatMessageResponseDto indicating the user has connected.
+     * @throws UserNotFoundException If the user cannot be found in the repository.
+     */
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/public") // linked to websocketconfig registry.enableSimpleBroker("/topic/", "/queue/")
     public ChatMessageResponseDto addPublicUser(@Payload MessageDto message, SimpMessageHeaderAccessor headerAccessor){
@@ -73,7 +80,13 @@ public class ChatController {
                 .build();
     }
 
-    // private rooms
+    /**
+     * Sends a message to a private chat room.
+     *
+     * @param chatroomName The name of the private chat room.
+     * @param message The message details.
+     * @return A ChatMessageResponseDto containing the sent message information.
+     */
     @MessageMapping("/chat/sendMessage/{chatroomName}")
     @SendTo("/queue/{chatroomName}")
     public ChatMessageResponseDto sendPrivateMessage(@DestinationVariable String chatroomName, @Payload MessageDto message) {
@@ -88,7 +101,15 @@ public class ChatController {
                 .build();
     }
 
-    // private rooms
+    /**
+     * Adds a user to a private chat room.
+     *
+     * @param chatroomName The name of the private chat room.
+     * @param message The message containing user information.
+     * @param headerAccessor The header accessor for the message.
+     * @return A ChatMessageResponseDto indicating the user has connected to the private room.
+     * @throws UserNotFoundException If the user cannot be found in the repository.
+     */
     @MessageMapping("/chat/addUser/{chatroomName}") // entering
     @SendTo("/queue/{chatroomName}") // dispatched to
     public ChatMessageResponseDto addPrivateUser(@DestinationVariable String chatroomName, @Payload MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
@@ -107,6 +128,12 @@ public class ChatController {
                 .build();
     }
 
+    /**
+     * Retrieves the chat history for a specific chat room.
+     *
+     * @param chatroomName The name of the chat room.
+     * @return A ChatRoomHistoryResponseDto containing the chat room history.
+     */
     @GetMapping("/api/history/{chatroomName}")
     @ResponseBody
     public ChatRoomHistoryResponseDto getHistory(@PathVariable final String chatroomName){
