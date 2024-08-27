@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity(name = "users")
@@ -37,6 +38,18 @@ public class User {
     @Column(name = "username", unique = true)
     private String username;
 
+    @NonNull
+    @Column(name = "lastname", unique = true)
+    private String lastname;
+
+    @NonNull
+    @Column(name = "firstname", unique = true)
+    private String firstname;
+
+    @NonNull
+    @Column(name = "phone", unique = true)
+    private String phone;
+
     @Column(name = "email", unique = true)
     private String email;
 
@@ -46,8 +59,16 @@ public class User {
     private String password;
 
     @NonNull
+    @Column(name = "address_id", unique = true)
+    private Long addressId;
+
+    @NonNull
     @Column(name = "role")
     private String role;
+
+    @NonNull
+    @Column(name = "birthdate")
+    private LocalDate birthdate;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
