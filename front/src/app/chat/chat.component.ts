@@ -52,7 +52,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // if the user is not logged, go back to login
     if(this.authService.getLoggedUserName() == "") {
-      this.router.navigate(['/']) 
+      this.router.navigate(['/'])
     } 
     else {
       this.activeRoomName = this.authService.getLoggedUserPrivateRoomName()
@@ -117,7 +117,12 @@ export class ChatComponent implements OnInit, OnDestroy {
    */
   assignNewCustomerToAdmin(customer : IUser){
     if(this.queue.find(queueCustomer => JSON.stringify(queueCustomer) === JSON.stringify(customer))){
-      this.assistedCustomersService.addToList(customer)
+      // check if the queued user is not already assigned before reassigning him
+      this.assistedCustomersService.list$.pipe(take(1)).subscribe(users => {
+        const alreadyAssignedUsers = users.filter(user => JSON.stringify(user) == JSON.stringify(customer))
+        if(alreadyAssignedUsers.length > 0) return
+        this.assistedCustomersService.addToList(customer)
+      }).unsubscribe()
       this.queueService.removeUser(customer.username)
       this.chatService.initNewConversation(this.receivedMessageCallback, customer)
       this.switchConversation(customer)
@@ -144,6 +149,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   disconnect(){
     this.assistedCustomersService.list$.pipe(take(1)).subscribe(users => users.forEach(user =>  this.closeConversation(user))).unsubscribe()
     this.ngOnDestroy()
+    this.router.navigate(['/'])
   }
 
   /**
@@ -160,7 +166,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.chatService.disconnect()
       if(this.timerSubscription) this.timerSubscription.unsubscribe()
       if(this.queueSubscription) this.queueSubscription.unsubscribe()
-      // if(this.inMemoryHistorySubscription) this.inMemoryHistorySubscription.unsubscribe()
       if(this.conversationSubscription) this.conversationSubscription.unsubscribe()
       this.queueService.removeSelf$().pipe(take(1)).subscribe().unsubscribe()
   }
