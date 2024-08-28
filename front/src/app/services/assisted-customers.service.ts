@@ -8,7 +8,6 @@ import { Observable, of } from 'rxjs';
 export class AssistedCustomersService {
 
   private assistedCustomers : Array<IUser> = []
-  // private activeCustomer : IUser | null = null
 
   constructor() { }
 
