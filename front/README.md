@@ -144,8 +144,11 @@ Before all you need to install these softwares, packages and librairies :
 ## Usage
 
 - Open a tab and connect as a customer using the following credentials. Username : guest / Password : password.
+
 - Open a second tab and connect as an administrator using the following credentials. Username : admin / Password : password.
+
 - As the administrator, select a customer from the queue to chat with.
+
 - Both participants can now communicate with each other.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
