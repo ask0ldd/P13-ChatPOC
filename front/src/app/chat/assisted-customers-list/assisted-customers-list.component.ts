@@ -37,7 +37,7 @@ export class AssistedCustomersListComponent implements OnDestroy, OnInit {
    * @param {IUser} customer - The customer whose conversation is to be switched.
    * @returns {void}
    */
-  triggerSwitchConversation(customer : IUser){
+  triggerSwitchConversation(customer : IUser): void{
     // console.log(JSON.stringify(this.notifications))
     this.chatNotificationsService.pullNotification(customer.chatroomName)
     this.callSwitchConversation.emit(customer)
@@ -49,7 +49,7 @@ export class AssistedCustomersListComponent implements OnDestroy, OnInit {
    * @param {IUser} customer - The customer whose conversation is to be closed.
    * @returns {void}
    */
-  triggerCloseConversation(customer : IUser){
+  triggerCloseConversation(customer : IUser): void{
     const updatedAssistedCustomers = this.assistedCustomers.filter(assistedCustomer => assistedCustomer != customer)
     this.assistedCustomers = updatedAssistedCustomers
     this.activeCustomer = this.assistedCustomers.length != 0 ? this.assistedCustomers[0] : null

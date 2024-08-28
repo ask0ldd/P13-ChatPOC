@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, take } from 'rxjs';
 import { ILoginResponse } from '../interfaces/ILoginResponse';
 import { IUser } from '../interfaces/IUser';
+import { TUserRole } from '../types/TUserRole';
 
 @Injectable({
   providedIn: 'root'
@@ -41,15 +42,15 @@ export class AuthService {
    * Gets the username of the currently logged-in user.
    * @returns {string} The username of the logged-in user.
    */
-  getLoggedUserName(){
+  getLoggedUserName(): string{
     return this.loggedUser.username
   }
 
   /**
    * Gets the role of the currently logged-in user.
-   * @returns {string} The role of the logged-in user.
+   * @returns {TUserRole} The role of the logged-in user.
    */
-  getLoggedUserRole(){
+  getLoggedUserRole(): TUserRole{
     return this.loggedUser.role
   }
 
@@ -57,7 +58,7 @@ export class AuthService {
    * Gets the private chatroom ID of the currently logged-in user.
    * @returns {string} The private chatroom ID of the logged-in user.
    */
-  getLoggedUserPrivateRoomName(){
+  getLoggedUserPrivateRoomName(): string{
     return this.loggedUser.chatroomName
   }
 

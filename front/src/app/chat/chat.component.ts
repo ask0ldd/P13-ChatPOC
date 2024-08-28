@@ -46,9 +46,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.queueSubscription = this.queueService.queue$.subscribe(queue => this.queue = queue)
   }
 
-  // !!! gerer qd un admin se deco alors qu'un customer n'est pas deco, il doit pouvoir etre remis en queue automatiquement
-  // pr que son pb soit solutionne par un autre admin
-
   ngOnInit(): void {
     // if the user is not logged, go back to login
     if(this.authService.getLoggedUserName() == "") {
@@ -97,8 +94,10 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   /**
    * Sends a message to the appropriate chatroom based on the user's role and assigned customer.
+   * 
+   * @returns {void}
    */
-  sendMessage(){
+  sendMessage() : void {
     // if the user is an admin with a customer being assigned, send the message to the assigned customer's room
     if(this.currentRole == "ADMIN" && this.activeCustomer != null) {
       this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.activeCustomer.chatroomName)
@@ -114,8 +113,10 @@ export class ChatComponent implements OnInit, OnDestroy {
    * Assigns a new customer to the admin and initializes the conversation.
    * 
    * @param {IUser} customer - The customer to be assigned.
+   * 
+   * @returns {void}
    */
-  assignNewCustomerToAdmin(customer : IUser){
+  assignNewCustomerToAdmin(customer : IUser) : void{
     if(this.queue.find(queueCustomer => JSON.stringify(queueCustomer) === JSON.stringify(customer))){
       // check if the queued user is not already assigned before reassigning him
       this.assistedCustomersService.list$.pipe(take(1)).subscribe(users => {
@@ -146,7 +147,12 @@ export class ChatComponent implements OnInit, OnDestroy {
     })
   }
 
-  disconnect(){
+  /**
+   * Disconnects the current user, closes all active conversations, and navigates to the home page.
+   * 
+   * @returns {void}
+   */
+  disconnect(): void{
     this.assistedCustomersService.list$.pipe(take(1)).subscribe(users => users.forEach(user =>  this.closeConversation(user))).unsubscribe()
     this.ngOnDestroy()
     this.router.navigate(['/'])
