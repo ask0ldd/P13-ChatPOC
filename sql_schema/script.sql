@@ -153,6 +153,7 @@ CREATE TABLE Payments (
     amount DECIMAL(10, 2) NOT NULL,
     payment_method ENUM('CREDIT_CARD', 'DEBIT_CARD', 'PAYPAL') DEFAULT 'CREDIT_CARD',
     payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    stripe_transaction_id VARCHAR(64) NOT NULL,
     FOREIGN KEY (rental_id) REFERENCES Rentals(rental_id)
 );
 
@@ -162,6 +163,7 @@ CREATE TABLE Refunds (
     amount DECIMAL(10, 2) NOT NULL,
     refund_method ENUM('CREDIT_CARD', 'DEBIT_CARD', 'PAYPAL') DEFAULT 'CREDIT_CARD',
     refund_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    stripe_transaction_id VARCHAR(64) NOT NULL,
     FOREIGN KEY (rental_id) REFERENCES Rentals(rental_id)
 );
 
