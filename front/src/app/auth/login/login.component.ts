@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     {
       const username = this.loginForm.get("username")?.value
       if(username) {
-        this.authService.login$(username).pipe(take(1)).subscribe({
+        this.subscription = this.authService.login$(username).pipe(take(1)).subscribe({
           next: (user : ILoginResponse) => {
             this.authService.setLoggedUser(user)
             this.router.navigate(['/chat'])
@@ -51,6 +51,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if(this.subscription) this.subscription.unsubscribe()
   }
 
 }
