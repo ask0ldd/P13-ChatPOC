@@ -6,7 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "messages")
+@Entity(name = "chatmessages")
 @Data
 @Getter
 @Setter
