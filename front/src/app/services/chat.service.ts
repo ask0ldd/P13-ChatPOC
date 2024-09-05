@@ -1,14 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnInit } from '@angular/core';
-import { CompatClient, IMessage, Stomp, StompHeaders, StompSubscription, messageCallbackType } from '@stomp/stompjs';
+import { Injectable } from '@angular/core';
+import { CompatClient, IMessage, Stomp, StompSubscription, messageCallbackType } from '@stomp/stompjs';
 import * as SockJS from 'sockjs-client';
 import { AuthService } from './auth.service';
 import { IChatRoomHistory } from '../interfaces/IChatRoomHistory';
 import { Observable } from 'rxjs';
 import { TMessageType } from '../types/TMessageType';
-import { IChatConversation } from '../interfaces/IChatConversation';
 import { IUser } from '../interfaces/IUser';
-import { ChatNotificationsService } from './chat-notifications.service';
 
 @Injectable({
   providedIn: 'root'

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { IUser } from '../interfaces/IUser';
-import { BehaviorSubject, Observable, interval, shareReplay, switchMap, tap, timer } from 'rxjs';
+import { BehaviorSubject, Observable, shareReplay, switchMap, timer } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'

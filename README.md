@@ -51,6 +51,9 @@ A basic social mvp app allowing individuals to share their thoughts on dev relat
 - MySQL 8.0.33
 - Spring JPA
 - Spring Boot Websocket Starter
+- Angular
+- StompJS
+- SockJS
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -124,7 +127,7 @@ Before all you need to install these softwares, packages and librairies :
    The following connection should already be set up :
       Local Instance MySQL80 / user : root / url : localhost:3306.
    ```
-5. Create a "chatpoc" empty schema with Workbench. You don't need to do more since all the mandatory tables will be created by Spring JPA when executing the project.
+5. Create a "chatpoc" empty schema with Workbench. You don't need to do more since all the mandatory tables will be created by Spring JPA when running the project.
 
 6. Build the project.
 
@@ -143,11 +146,15 @@ Before all you need to install these softwares, packages and librairies :
 
 ## Usage
 
-- Open a tab and connect as a customer using the following credentials. Username : guest / Password : password.
+- Open a tab and connect as a customer using the following credentials : 
 
-- Open a second tab and connect as an administrator using the following credentials. Username : admin / Password : password.
+Username : guest / Password : password.
 
-- As the administrator, select a customer from the queue to chat with.
+- Open a second tab and connect as an administrator using these credentials : 
+
+Username : admin / Password : password.
+
+- Within the second tab, as the administrator, select a customer from the queue
 
 - Both participants can now communicate with each other.
 

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription, take } from 'rxjs';
 import { ILoginResponse } from 'src/app/interfaces/ILoginResponse';
@@ -16,7 +16,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   private subscription: Subscription | null = null;
 
   constructor(
-    private fb: FormBuilder,
     private router: Router,
     private authService : AuthService,
   ) { }

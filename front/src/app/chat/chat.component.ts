@@ -5,12 +5,11 @@ import { IChatMessage } from '../interfaces/IChatMessage';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { QueueService } from '../services/queue.service';
-import { Subscription, take, timer } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 import { IUser } from '../interfaces/IUser';
 import { TUserRole } from '../types/TUserRole';
 import { AssistedCustomersService } from '../services/assisted-customers.service';
 import { ChatNotificationsService } from '../services/chat-notifications.service';
-import { AssistedCustomersListComponent } from './assisted-customers-list/assisted-customers-list.component';
 
 @Component({
   selector: 'app-chat',
