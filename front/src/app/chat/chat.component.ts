@@ -55,11 +55,11 @@ export class ChatComponent implements OnInit, OnDestroy {
       // by default, the user is connected to its own private chatroom
       this.chatService.initChatClient(this.receivedMessageCallback, this.activeRoomName)
       this.currentRole = this.authService.getLoggedUserRole()
-      // if the user is an admin, retrieve the queue and autorefresh it every x secs
+      // if the user is an admin, retrieve the customers queue and autorefresh it every 8 secs
       if(this.currentRole == "ADMIN") {
         this.queueService.startPolling()
       }
-      // retrieve the history for the current chatroom
+      // retrieve the history for the default active chatroom
       this.conversationSubscription = this.chatService.fetchHistory$(this.activeRoomName).pipe(take(1)).subscribe({
         next : (chatRoomHistory) => this.activeConversation = chatRoomHistory.messages,
         error : () => this.activeConversation = []
@@ -80,7 +80,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     console.log('destination : ' + destinationRoomEndpoint)
     const destinationRoomName = destinationRoomEndpoint.split('/')[destinationRoomEndpoint.split('/').length-1]
-    // message is displayed only if it targets the active chatroom
+    // message is displayed only if it targets the user's active chatroom
     if(this.activeRoomName == destinationRoomName) {
       this.activeConversation.push(parsedMessage)
       // this.resetInactivityTimer()
@@ -88,7 +88,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
 
     if(this.authService.getLoggedUserRole() != "ADMIN") return
-    // if the logged user is an admin receiving a message from a inactive subscribed chatrom
+    // send a notification to the user if he is an admin & if he received a message in an inactive customer tab
     this.chatNotificationsService.pushNotification(destinationRoomName)
   }
 
@@ -98,11 +98,11 @@ export class ChatComponent implements OnInit, OnDestroy {
    * @returns {void}
    */
   sendMessage() : void {
-    // if the user is an admin with a customer being assigned, send the message to the assigned customer's room
+    // if the user is an admin with a customer assigned, send the message to this customer's private room
     if(this.currentRole == "ADMIN" && this.activeCustomer != null) {
       this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.activeCustomer.chatroomName)
     } else {
-      // in all the other cases, send the message to the logged user's room
+      // in any other case, send the message to the user's own room
       this.chatService.sendMessage("CHAT", this.messageTextarea.nativeElement.value, this.authService.getLoggedUserPrivateRoomName())
     }
     this.messageTextarea.nativeElement.value = ""
@@ -118,7 +118,7 @@ export class ChatComponent implements OnInit, OnDestroy {
    */
   assignNewCustomerToAdmin(customer : IUser) : void{
     if(this.queue.find(queueCustomer => JSON.stringify(queueCustomer) === JSON.stringify(customer))){
-      // check if the queued user is not already assigned before reassigning him
+      // check if the queued user is not already assigned before any assignment
       this.assistedCustomersService.list$.pipe(take(1)).subscribe(users => {
         const alreadyAssignedUsers = users.filter(user => JSON.stringify(user) == JSON.stringify(customer))
         if(alreadyAssignedUsers.length > 0) return

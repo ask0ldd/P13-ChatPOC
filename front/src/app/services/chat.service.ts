@@ -14,6 +14,14 @@ import { IUser } from '../interfaces/IUser';
 export class ChatService {
 
   private baseChatUrl = "http://localhost:8080/chat"
+
+  private endpoints = {
+    sendMessageToPrivateRoom : "/ws/chat/sendMessage/",
+    sendMessageToPublicRoom : "/ws/chat.sendMessage",
+    sendNewUserAlertToPrivateRoom : "/ws/chat/addUser/",
+    sendNewUserAlertToPublicRoom : "/ws/chat.addUser",
+  }
+
   private socket! : WebSocket
   private stompClient! : CompatClient
   private subs : StompSubscription[] = []
@@ -93,17 +101,17 @@ export class ChatService {
   sendMessage(messageType : TMessageType, message : string, privateRoomName : string){ 
     if (this.stompClient) {
       // message is sent to the public endpoint by default
-      let endpoint = messageType == "CHAT" ? '/ws/chat.sendMessage' : '/ws/chat.addUser'
+      let endpoint = messageType == "CHAT" ? this.endpoints.sendMessageToPublicRoom : this.endpoints.sendNewUserAlertToPublicRoom
 
       if(messageType == "CHAT") {
         // endpoint replaced by a private one if necessary
-        if(privateRoomName) endpoint = '/ws/chat/sendMessage/' + privateRoomName
+        if(privateRoomName) endpoint = this.endpoints.sendMessageToPrivateRoom + privateRoomName
         this.stompClient.send(endpoint, {}, JSON.stringify({ content: message, sender: this.authService.getLoggedUserName(), type : "CHAT" }))
       }
 
       if(messageType == "JOIN") {
         // endpoint replaced by a private one if necessary
-        if(privateRoomName) endpoint = '/ws/chat/addUser/' + privateRoomName
+        if(privateRoomName) endpoint = this.endpoints.sendNewUserAlertToPrivateRoom + privateRoomName
         const username = this.authService.getLoggedUserName()
         this.stompClient.send(endpoint, {}, JSON.stringify({ content: username, sender: username, type : "JOIN"}))
       }
