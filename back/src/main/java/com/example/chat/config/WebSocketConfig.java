@@ -10,14 +10,25 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    /**
+     * Configures the message broker for WebSocket communication.
+     * This method is part of the WebSocketMessageBrokerConfigurer interface implementation.
+     *
+     * @param registry The MessageBrokerRegistry to be configured
+     */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/ws");
-        // topic linked to chatcontroller @SendTo("/topic/messages"
-        // topic for public message & queue for private ones
+        // /topic : public message & /queue : private ones
         registry.enableSimpleBroker("/topic/", "/queue/");
     }
 
+    /**
+     * Registers STOMP endpoints for WebSocket communication.
+     * This method is part of the WebSocketMessageBrokerConfigurer interface implementation.
+     *
+     * @param registry The StompEndpointRegistry to register endpoints
+     */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat")

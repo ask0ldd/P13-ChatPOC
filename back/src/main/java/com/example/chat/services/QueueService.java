@@ -22,20 +22,36 @@ public class QueueService implements IQueueService {
         chatQueue = new HashSet<>();
     }
 
+    /**
+     * {@inheritDoc}
+     * Retrieves all users currently in the queue.
+     */
     public Set<UserProjectionDto> getUsers(){
         return this.chatQueue;
     }
 
+    /**
+     * {@inheritDoc}
+     * Adds a new user to the queue.
+     */
     public Set<UserProjectionDto> addUser(UserProjectionDto user){
         this.chatQueue.add(user);
         return this.chatQueue;
     }
 
+    /**
+     * {@inheritDoc}
+     * Removes a specific user from the queue based on the provided UserProjectionDto object.
+     */
     public Set<UserProjectionDto> removeUser(UserProjectionDto user){
         this.chatQueue.removeIf(inQueueUser -> inQueueUser.equals(user));
         return this.chatQueue;
     }
 
+    /**
+     * {@inheritDoc}
+     * Removes a specific user from the queue based on the provided username.
+     */
     public Set<UserProjectionDto> removeUser(String username){
         this.chatQueue.removeIf(inQueueUser -> inQueueUser.getUsername().equals(username));
         return this.chatQueue;

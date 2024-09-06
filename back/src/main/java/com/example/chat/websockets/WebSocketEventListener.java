@@ -26,10 +26,16 @@ public class WebSocketEventListener {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Handles the disconnection event of a user from a chat session.
+     *
+     * @param event The SessionDisconnectEvent containing information about the disconnected session.
+     * @throws UserNotFoundException if the disconnected user cannot be found in the repository.
+     */
     @EventListener
     public void handleDisconnect(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String username = (String) headerAccessor.getSessionAttributes().get("username"); // !!! needs to be fixed since value not found
+        String username = (String) headerAccessor.getSessionAttributes().get("username");
         String roomname = (String) headerAccessor.getSessionAttributes().get("roomname");
         System.out.println("User disconnected : " + username);
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));

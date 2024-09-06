@@ -158,4 +158,6 @@ Username : admin / Password : password.
 
 - Both participants can now communicate with each other.
 
+- The admin receive "*" as a visual notification when he receives a message in an inactive tab (when dealing with multiple customers).
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

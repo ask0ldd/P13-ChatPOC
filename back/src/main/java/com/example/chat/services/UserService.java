@@ -16,10 +16,18 @@ public class UserService implements IUserService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     * Retrieves a user by their username.
+     */
     public User getUser(String username){
         return this.userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
     }
 
+    /**
+     * {@inheritDoc}
+     * Retrieves a projection of user data by username.
+     */
     public UserProjectionDto getUserProjection(String username){
         User user = this.userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         return new UserProjectionDto(user);

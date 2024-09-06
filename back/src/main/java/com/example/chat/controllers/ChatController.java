@@ -113,7 +113,7 @@ public class ChatController {
     @MessageMapping("/chat/addUser/{chatroomName}") // entering
     @SendTo("/queue/{chatroomName}") // dispatched to
     public ChatMessageResponseDto addPrivateUser(@DestinationVariable String chatroomName, @Payload MessageDto message, SimpMessageHeaderAccessor headerAccessor) {
-        // add username and roomId to websocket session
+        // add username and roomId to the websocket session
         headerAccessor.getSessionAttributes().put("username", message.getSender());
         headerAccessor.getSessionAttributes().put("roomId", chatroomName);
         String sender = message.getSender();

@@ -78,6 +78,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     if(destinationRoomEndpoint == null || parsedMessage == null) return
 
+    console.log('destination : ' + destinationRoomEndpoint)
     const destinationRoomName = destinationRoomEndpoint.split('/')[destinationRoomEndpoint.split('/').length-1]
     // message is displayed only if it targets the active chatroom
     if(this.activeRoomName == destinationRoomName) {
@@ -135,11 +136,11 @@ export class ChatComponent implements OnInit, OnDestroy {
    * @param {IUser} customer - The customer for the new conversation.
    */
   switchConversation(customer : IUser){
-    console.log("switchConvCustomer : " + JSON.stringify(customer))
+    // console.log("switchConvCustomer : " + JSON.stringify(customer))
     this.activeCustomer = customer
     this.activeRoomName = customer.chatroomName
     if(this.conversationSubscription) this.conversationSubscription.unsubscribe()
-    console.log("roomId : " + this.activeRoomName)
+    // console.log("roomId : " + this.activeRoomName)
     this.conversationSubscription = this.chatService.fetchHistory$(this.activeRoomName).pipe(take(1)).subscribe({
       next : (chatRoomHistory) => this.activeConversation = chatRoomHistory.messages,
       error : () => this.activeConversation = []

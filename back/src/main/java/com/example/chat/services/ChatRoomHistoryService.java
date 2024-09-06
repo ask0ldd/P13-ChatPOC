@@ -16,9 +16,13 @@ public class ChatRoomHistoryService implements IChatRoomHistoryService {
         this.chatRoomHistoryRepository = chatRoomHistoryRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     * Retrieves the chat room history for a specified chat room.
+     */
     public ChatRoomHistory getHistory(String chatroomName){
-        ChatRoomHistory chatroom = chatRoomHistoryRepository.findByName(chatroomName).orElseThrow(() -> new HistoryNotFoundException("Target user cannot be found."));
+        ChatRoomHistory chatroom = chatRoomHistoryRepository.findByName(chatroomName).orElseThrow(() -> new HistoryNotFoundException("Target chatroom cannot be found."));
         User user = chatroom.getOwner();
-        return chatRoomHistoryRepository.findByOwner(user).orElseThrow(() -> new HistoryNotFoundException("Target session cannot be found."));
+        return chatRoomHistoryRepository.findByOwner(user).orElseThrow(() -> new HistoryNotFoundException("Target chat history cannot be found."));
     }
 }

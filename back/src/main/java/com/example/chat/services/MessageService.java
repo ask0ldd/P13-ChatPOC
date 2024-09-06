@@ -25,6 +25,10 @@ public class MessageService implements IMessageService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     * Saves a new chat message to the specified chatroom.
+     */
     public ChatMessage saveMessage(String chatroomName, MessageDto receivedMessage){
         User sender = userRepository.findByUsername(receivedMessage.getSender()).orElseThrow(() -> new UserNotFoundException("Target user cannot be found."));
         ChatRoomHistory chatroom = chatRoomHistoryRepository.findByName(chatroomName).orElseThrow(() -> new HistoryNotFoundException("Target user cannot be found."));
